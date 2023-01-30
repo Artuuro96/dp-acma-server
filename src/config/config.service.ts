@@ -9,6 +9,7 @@ export class ConfigService {
 
     if (isDevelopmentEnv) {
       const envFilePath = __dirname + '/../../.env';
+      console.log(envFilePath);
       const existPath = fs.existsSync(envFilePath);
 
       if (!existPath) {

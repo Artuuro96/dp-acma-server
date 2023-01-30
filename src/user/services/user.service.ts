@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { UserDTO } from 'src/dtos/user.dto';
 import { User } from 'src/repository/entities/user.entity';
 import { UserRepository } from 'src/repository/repositories/user/user.repository';
 
@@ -12,6 +13,20 @@ export class UserService {
    * @returns
    */
   async findByName(name: string): Promise<User> {
-    return this.userRepository.findByName(name);
+    return await this.userRepository.findByName(name);
+  }
+
+  /**
+   *
+   * @param {UserDTO}        user        -user data transfer object to be created
+   * @returns
+   */
+  async create(user: UserDTO): Promise<User> {
+    const newUser = new User({
+      ...user,
+      createdAt: new Date(),
+      createdBy: 'arturo',
+    });
+    return await this.userRepository.create(newUser);
   }
 }

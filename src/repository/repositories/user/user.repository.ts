@@ -1,4 +1,5 @@
 import { InjectEntityManager } from '@nestjs/typeorm';
+import { UserDTO } from 'src/dtos/user.dto';
 import { EntityManager } from 'typeorm';
 import { User } from '../../entities/user.entity';
 import { BaseRepository } from '../base/base.repository';
@@ -20,5 +21,10 @@ export class UserRepository extends BaseRepository<User> {
       .getOne();
 
     return response;
+  }
+
+  async createNew(user: UserDTO): Promise<User> {
+    const newUser = new User(user);
+    return this.create(newUser);
   }
 }

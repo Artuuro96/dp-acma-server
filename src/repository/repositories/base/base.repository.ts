@@ -8,7 +8,12 @@ export class BaseRepository<T> {
     protected readonly entityManager: EntityManager,
   ) {}
 
-  findOneById(id: string): Promise<T> {
+  async findOneById(id: string): Promise<T> {
     return id as any;
+  }
+
+  async create(data: T): Promise<T> {
+    console.log('--------->', data);
+    return this.entityManager.save(data);
   }
 }

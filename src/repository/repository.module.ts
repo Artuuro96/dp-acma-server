@@ -1,10 +1,18 @@
 import { Module } from '@nestjs/common';
-import { databaseConfig } from 'src/database/database.config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { dataSourceOptions } from 'src/db/ormconfig';
+import { PermissionRepository } from './repositories/permission/permission.repository';
+import { RoleRepository } from './repositories/role/role.repository';
 import { UserRepository } from './repositories/user/user.repository';
 
 @Module({
-  imports: [...databaseConfig],
-  providers: [UserRepository],
-  exports: [...databaseConfig, UserRepository],
+  imports: [TypeOrmModule.forRoot(dataSourceOptions)],
+  providers: [UserRepository, RoleRepository, PermissionRepository],
+  exports: [
+    TypeOrmModule.forRoot(dataSourceOptions),
+    UserRepository,
+    RoleRepository,
+    PermissionRepository,
+  ],
 })
 export class RepositoryModule {}

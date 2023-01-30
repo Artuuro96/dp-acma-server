@@ -1,5 +1,13 @@
 import { BaseEntity } from './base.entity';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Permission } from './permission.entity';
+import { User } from './user.entity';
 
 @Entity('roles')
 export class Role extends BaseEntity {
@@ -9,9 +17,21 @@ export class Role extends BaseEntity {
   @Column('varchar')
   name: string;
 
-  @Column('uuid', { name: 'permission_id' })
-  permissionId: string;
-
   @Column('varchar')
   description: string;
+
+  @ManyToMany(() => User, (user) => user.roles)
+  users: User[];
+
+  @ManyToMany(() => Permission, (permission) => permission.roles)
+  @JoinTable({
+    name: 'role_permissions',
+    joinColumn: {
+      name: 'role_id',
+    },
+    inverseJoinColumn: {
+      name: 'permission_id',
+    },
+  })
+  permissions: Permission[];
 }

@@ -1,32 +1,33 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column } from 'typeorm';
 
-@Entity()
 export class BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  @Column({ name: 'created_at', type: 'timestamp', nullable: false })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
-  updatedAt: Date;
-
-  @Column('varchar', { name: 'created_by' })
+  @Column('uuid', { name: 'created_by', nullable: false })
   createdBy: string;
 
-  @Column('varchar', { name: 'updated_by' })
+  @Column({ name: 'updated_at', type: 'timestamp', nullable: true })
+  updatedAt: Date;
+
+  @Column('uuid', { name: 'updated_by', nullable: true })
   updatedBy: string;
 
-  @Column({ name: 'deleted_at', type: 'timestamp' })
+  @Column({
+    name: 'deleted_at',
+    type: 'timestamp',
+    nullable: true,
+  })
   deletedAt: Date;
 
-  @Column('boolean')
+  @Column({
+    name: 'deleted_by',
+    type: 'uuid',
+    nullable: true,
+  })
+  deletedBy: string;
+
+  @Column('boolean', { nullable: false, default: false })
   deleted: boolean;
 
   constructor(baseEntity: Partial<BaseEntity> = {}) {
