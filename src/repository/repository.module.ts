@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { dataSourceOptions } from 'src/db/ormconfig';
+import { dataSourceOptions } from '../db/ormconfig';
 import { PermissionRepository } from './repositories/permission/permission.repository';
 import { RoleRepository } from './repositories/role/role.repository';
 import { UserRepository } from './repositories/user/user.repository';
