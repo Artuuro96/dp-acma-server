@@ -10,7 +10,7 @@ export class PermissionService {
 
   /**
    * @name create
-   * @param {PermissionDTO} permission - permission data transfer object to be saved
+   * @param {PermissionDTO} permission
    * @returns {Promise<Permission>}
    */
   async create(permission: PermissionDTO): Promise<Permission> {
@@ -24,7 +24,7 @@ export class PermissionService {
 
   /**
    * @name findByIds
-   * @param {string[]} ids - permission identifiers to look for
+   * @param {string[]} ids
    * @returns {Promise<Permission[]>}
    */
   async findByIds(ids: string[]): Promise<Permission[]> {
@@ -33,7 +33,7 @@ export class PermissionService {
 
   /**
    * @name findById
-   * @param {string} id - permission identifier to look for
+   * @param {string} id
    * @returns {Promise<Permission>}
    */
   async findById(id: string): Promise<Permission> {
@@ -42,14 +42,20 @@ export class PermissionService {
 
   /**
    * @name update
-   * @param {string} id - permission identifier
-   * @param {Partial<PermissionDTO>} updatePermission - permission data transfer object to update
+   * @param {string} id
+   * @param {Partial<PermissionDTO>} updatePermission
    * @returns {Promise<Permission>}
    */
-  async update(
-    id: string,
-    updatePermission: Partial<PermissionDTO>,
-  ): Promise<Permission> {
+  async update(id: string, updatePermission: Partial<PermissionDTO>): Promise<Permission> {
     return await this.permissionRepository.update(id, updatePermission);
+  }
+
+  /**
+   * @name delete
+   * @param {string} id
+   * @returns {Promise<void>}
+   */
+  async delete(id: string): Promise<void> {
+    return await this.permissionRepository.delete(id);
   }
 }

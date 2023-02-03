@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -25,7 +26,7 @@ export class PermissionController {
     return await this.permissionService.findByIds(ids);
   }
 
-  @Get()
+  @Get(':id')
   async findById(@Param('id') id: string): Promise<Permission> {
     return await this.permissionService.findById(id);
   }
@@ -36,5 +37,10 @@ export class PermissionController {
     @Body() updatePermissionDTO: Partial<Permission>,
   ): Promise<Permission> {
     return await this.permissionService.update(id, updatePermissionDTO);
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: string): Promise<void> {
+    return await this.permissionService.delete(id);
   }
 }

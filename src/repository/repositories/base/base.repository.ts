@@ -4,10 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class BaseRepository<T> {
-  constructor(
-    protected readonly entityClass: ObjectType<T>,
-    protected readonly entityManager: EntityManager,
-  ) {}
+  constructor(protected readonly entityClass: ObjectType<T>, protected readonly entityManager: EntityManager) {}
 
   async findOneById(id: string): Promise<T> {
     return await this.entityManager
@@ -16,7 +13,7 @@ export class BaseRepository<T> {
       .from(this.entityClass, this.entityClass.name)
       .where('id = :id', { id })
       .andWhere('deleted = false')
-      .execute();
+      .getRawOne();
   }
 
   async create(data: T): Promise<T> {
@@ -47,5 +44,19 @@ export class BaseRepository<T> {
       .execute();
 
     return await this.findOneById(id);
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.entityManager
+      .createQueryBuilder()
+      .update(this.entityClass)
+      .set({
+        deleted: true,
+        deletedAt: new Date(),
+        deletedBy: uuidv4(),
+      })
+      .where('id = :id', { id })
+      .andWhere('deleted = false')
+      .execute();
   }
 }
