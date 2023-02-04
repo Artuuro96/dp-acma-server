@@ -23,6 +23,17 @@ export class UserRepository extends BaseRepository<User> {
     return response;
   }
 
+  async findOne(username: string): Promise<User> {
+    const userFound = await this.entityManager
+      .createQueryBuilder(User, 'user')
+      .select('user')
+      .where('user.username = :username', { username })
+      .andWhere('user.deleted = false')
+      .getOne();
+
+    return userFound;
+  }
+
   async createNew(user: UserDTO): Promise<User> {
     const newUser = new User(user);
     return this.create(newUser);
