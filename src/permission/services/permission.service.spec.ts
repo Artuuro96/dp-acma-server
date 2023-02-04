@@ -1,14 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { PermissionDTO } from 'src/dtos/permission.dto';
 import { Permission } from 'src/repository/entities/permission.entity';
 import { PermissionRepository } from 'src/repository/repositories/permission/permission.repository';
-import { RepositoryModule } from 'src/repository/repository.module';
+import { EntityManager } from 'typeorm';
 import { PermissionService } from './permission.service';
 
 describe('PermissionService', () => {
   let permissionService: PermissionService;
   let permissionDTOMock: PermissionDTO;
-  let permissionRepositoryMock: PermissionRepository;
+  const entityManagerMock = () => ({
+    queryBuilderMock,
+  });
+  let queryBuilderMock;
+
   const permissionsMock = [
     new Permission({
       id: 'id-1',
@@ -26,11 +31,23 @@ describe('PermissionService', () => {
     }),
   ];
 
+  let permissionRepositoryMock: PermissionRepository;
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [PermissionService],
-      imports: [RepositoryModule],
-    }).compile();
+      providers: [
+        PermissionService,
+        PermissionRepository,
+        {
+          provide: EntityManager,
+          useFactory: entityManagerMock,
+        },
+      ],
+    })
+      .overrideProvider(getRepositoryToken(Permission))
+      .useValue(jest.fn())
+      .compile();
+
     permissionDTOMock = {
       name: 'permission-1',
       description: 'description mock',

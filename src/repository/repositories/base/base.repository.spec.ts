@@ -1,22 +1,31 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from 'src/repository/entities/permission.entity';
-import { RepositoryModule } from 'src/repository/repository.module';
-import { EntityManager, UpdateQueryBuilder } from 'typeorm';
-import { PermissionRepository } from '../permission/permission.repository';
+import { EntityManager } from 'typeorm';
+import { BaseRepository } from './base.repository';
 
 describe('BaseRepository', () => {
-  let permissionRepository: PermissionRepository;
+  //let permissionRepository: PermissionRepository;
+  let baseRepository: BaseRepository<Permission>;
   let entityManager: EntityManager;
   let permissionsMock: Permission[];
+  const entityManagerMock = () => ({
+    queryBuilderMock,
+  });
   let queryBuilderMock;
   let idsMock: string[];
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [RepositoryModule],
+      providers: [
+        {
+          provide: EntityManager,
+          useFactory: entityManagerMock,
+        },
+      ],
     }).compile();
-    permissionRepository = module.get<PermissionRepository>(PermissionRepository);
+    //permissionRepository = module.get<PermissionRepository>(PermissionRepository);
     entityManager = module.get<EntityManager>(EntityManager);
+    baseRepository = new BaseRepository(Permission, entityManager);
     queryBuilderMock = {
       select: jest.fn().mockReturnThis(),
       where: jest.fn().mockReturnThis(),
@@ -48,7 +57,7 @@ describe('BaseRepository', () => {
   describe('create', () => {
     it('should create the new permission', async () => {
       entityManager.save = jest.fn().mockResolvedValue(permissionsMock[0]);
-      const result = await permissionRepository.create(permissionsMock[0]);
+      const result = await baseRepository.create(permissionsMock[0]);
       expect(entityManager.save).toHaveBeenCalledWith(permissionsMock[0]);
       expect(result).toBe(permissionsMock[0]);
     });
@@ -58,7 +67,7 @@ describe('BaseRepository', () => {
     it('should return the permissions found', async () => {
       queryBuilderMock.execute = jest.fn().mockResolvedValue(permissionsMock);
       entityManager.createQueryBuilder = jest.fn().mockImplementation(() => queryBuilderMock);
-      const result = await permissionRepository.findByIds(['id-1', 'id-2']);
+      const result = await baseRepository.findByIds(['id-1', 'id-2']);
       expect(queryBuilderMock.select).toHaveBeenCalled();
       expect(queryBuilderMock.from).toHaveBeenCalledWith(Permission, Permission.name);
       expect(queryBuilderMock.where).toHaveBeenCalledWith('id = ANY(:ids)', { ids: idsMock });
@@ -72,7 +81,8 @@ describe('BaseRepository', () => {
     it('should return the permission found', async () => {
       queryBuilderMock.getRawOne = jest.fn().mockResolvedValue(permissionsMock[0]);
       entityManager.createQueryBuilder = jest.fn().mockImplementation(() => queryBuilderMock);
-      const result = await permissionRepository.findOneById('id-1');
+      const result = await baseRepository.findOneById('id-1');
+
       expect(queryBuilderMock.select).toHaveBeenCalled();
       expect(queryBuilderMock.from).toHaveBeenCalledWith(Permission, Permission.name);
       expect(queryBuilderMock.where).toHaveBeenCalledWith('id = :id', { id: idsMock[0] });
@@ -89,7 +99,7 @@ describe('BaseRepository', () => {
       queryBuilderMock.execute = jest.fn().mockResolvedValue(permissionsMock[0]);
       entityManager.createQueryBuilder = jest.fn().mockImplementation(() => queryBuilderMock);
 
-      await permissionRepository.update('id-1', {
+      await baseRepository.update('id-1', {
         name: 'name mock',
         description: 'description mock',
       });
@@ -109,7 +119,7 @@ describe('BaseRepository', () => {
       queryBuilderMock.execute = jest.fn().mockResolvedValue(permissionsMock[0]);
       entityManager.createQueryBuilder = jest.fn().mockImplementation(() => queryBuilderMock);
 
-      await permissionRepository.delete('id-1');
+      await baseRepository.delete('id-1');
 
       expect(queryBuilderMock.update).toHaveBeenCalledWith(Permission);
       expect(queryBuilderMock.set).toHaveBeenCalled();

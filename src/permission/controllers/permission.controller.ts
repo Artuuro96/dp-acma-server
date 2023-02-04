@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { PermissionDTO } from '../../dtos/permission.dto';
 import { Permission } from '../../repository/entities/permission.entity';
 import { PermissionService } from '../services/permission.service';

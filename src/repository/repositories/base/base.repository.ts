@@ -4,7 +4,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class BaseRepository<T> {
-  constructor(protected readonly entityClass: ObjectType<T>, protected readonly entityManager: EntityManager) {}
+  constructor(
+    protected readonly entityClass: ObjectType<T>,
+    protected readonly entityManager: EntityManager,
+  ) {}
 
   async findOneById(id: string): Promise<T> {
     return await this.entityManager

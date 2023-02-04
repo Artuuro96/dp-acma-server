@@ -1,6 +1,8 @@
 import { Test } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { Permission } from 'src/repository/entities/permission.entity';
-import { RepositoryModule } from '../../repository/repository.module';
+import { PermissionRepository } from 'src/repository/repositories/permission/permission.repository';
+import { EntityManager } from 'typeorm';
 import { PermissionService } from '../services/permission.service';
 import { PermissionController } from './permission.controller';
 
@@ -8,13 +10,26 @@ describe('PermissionController', () => {
   let permissionController: PermissionController;
   let permissionService: PermissionService;
   let mockPermissions: Permission[];
+  const entityManagerMock = () => ({
+    queryBuilderMock,
+  });
+  let queryBuilderMock;
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [PermissionController],
-      providers: [PermissionService],
-      imports: [RepositoryModule],
-    }).compile();
+      providers: [
+        PermissionService,
+        PermissionRepository,
+        {
+          provide: EntityManager,
+          useFactory: entityManagerMock,
+        },
+      ],
+    })
+      .overrideProvider(getRepositoryToken(Permission))
+      .useValue(jest.fn())
+      .compile();
 
     permissionService = moduleRef.get<PermissionService>(PermissionService);
     permissionController = moduleRef.get<PermissionController>(PermissionController);

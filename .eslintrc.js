@@ -20,7 +20,7 @@ module.exports = {
     'max-len': [
       'error',
       {
-        'code': 130
+        'code': 110
       }
     ],
     '@typescript-eslint/interface-name-prefix': 'off',
