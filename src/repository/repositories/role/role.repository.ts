@@ -1,5 +1,5 @@
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { Role } from 'src/repository/entities/role.entity';
+import { Role } from '../../entities/role.entity';
 import { EntityManager } from 'typeorm';
 import { BaseRepository } from '../base/base.repository';
 

@@ -15,4 +15,9 @@ export class Permission extends BaseEntity {
 
   @ManyToMany(() => Role, (role) => role.permissions)
   roles: Role[];
+
+  constructor(permission: Partial<Permission>) {
+    super(permission);
+    Object.assign(this, permission);
+  }
 }

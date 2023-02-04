@@ -1,5 +1,5 @@
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { Permission } from 'src/repository/entities/permission.entity';
+import { Permission } from '../../entities/permission.entity';
 import { EntityManager } from 'typeorm';
 import { BaseRepository } from '../base/base.repository';
 
