@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsEmail, IsNotEmpty, IsString, IsStrongPassword } from 'class-validator';
 
 export class UserDTO {
   @IsString()
@@ -14,17 +14,15 @@ export class UserDTO {
   @IsString()
   username: string;
 
+  @IsEmail()
   email: string;
 
+  @IsStrongPassword()
   password: string;
 
-  roleId: string;
+  @IsArray()
+  roles: string[];
 
-  settingId: string;
-
+  @IsBoolean()
   active: boolean;
-
-  oldPasswords: string[];
-
-  recoveryCode: string;
 }

@@ -1,11 +1,5 @@
 import { BaseEntity } from './base.entity';
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Permission } from './permission.entity';
 import { User } from './user.entity';
 
@@ -14,10 +8,10 @@ export class Role extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('varchar')
+  @Column('varchar', { length: 50 })
   name: string;
 
-  @Column('varchar')
+  @Column('varchar', { length: 50 })
   description: string;
 
   @ManyToMany(() => User, (user) => user.roles)
@@ -34,4 +28,9 @@ export class Role extends BaseEntity {
     },
   })
   permissions: Permission[];
+
+  constructor(role: Partial<Role> = {}) {
+    super(role);
+    Object.assign(this, role);
+  }
 }

@@ -10,9 +10,12 @@ import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { PermissionService } from 'src/permission/services/permission.service';
+import { PermissionModule } from 'src/permission/permission.module';
 
 @Module({
   imports: [
+    PermissionModule,
     UserModule,
     PassportModule,
     RepositoryModule,
@@ -31,7 +34,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, UserService, JwtStrategy],
+  providers: [AuthService, LocalStrategy, UserService, JwtStrategy, PermissionService],
   exports: [AuthService],
 })
 export class AuthModule {}

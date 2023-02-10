@@ -1,4 +1,4 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { User } from './user.entity';
 
@@ -10,9 +10,12 @@ export class Session extends BaseEntity {
   @Column('uuid', { name: 'user_id' })
   userId: string;
 
-  @Column('varchar')
-  token: string;
-
   @OneToOne(() => User, (user) => user.session)
+  @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   user: User;
+
+  constructor(session: Partial<Session> = {}) {
+    super(session);
+    Object.assign(this, session);
+  }
 }

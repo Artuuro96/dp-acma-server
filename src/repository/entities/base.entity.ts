@@ -1,6 +1,10 @@
-import { Column } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
+@Entity('users')
 export class BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
   @Column({ name: 'created_at', type: 'timestamp', nullable: false })
   createdAt: Date;
 

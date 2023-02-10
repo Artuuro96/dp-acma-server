@@ -11,19 +11,15 @@ export class ConfigService {
 
     if (isDevelopmentEnv) {
       const envFilePath = __dirname + '/../../.env';
-      console.log(envFilePath);
       const existPath = fs.existsSync(envFilePath);
 
       if (!existPath) {
         console.log('.env file does not exist');
-        process.exit(0);
+        return;
       }
-
       this.envConfig = parse(fs.readFileSync(envFilePath));
     } else {
-      this.envConfig = {
-        PORT: process.env.PORT,
-      };
+      this.envConfig = process.env;
     }
   }
 

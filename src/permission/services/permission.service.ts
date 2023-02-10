@@ -2,21 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { PermissionDTO } from 'src/dtos/permission.dto';
 import { Permission } from '../../repository/entities/permission.entity';
 import { PermissionRepository } from '../../repository/repositories/permission/permission.repository';
-import { v4 as uuidv4 } from 'uuid';
+import { Context } from 'src/auth/context/execution-ctx';
 
 @Injectable()
 export class PermissionService {
-  constructor(private permissionRepository: PermissionRepository) {}
+  constructor(private readonly permissionRepository: PermissionRepository) {}
 
   /**
    * @name create
    * @param {PermissionDTO} permission
    * @returns {Promise<Permission>}
    */
-  async create(permission: PermissionDTO): Promise<Permission> {
+  async create(executionCtx: Context, permission: PermissionDTO): Promise<Permission> {
     const newPermission = new Permission({
       ...permission,
-      createdBy: uuidv4(),
+      createdBy: executionCtx.userId,
       createdAt: new Date(),
     });
     return await this.permissionRepository.create(newPermission);
@@ -41,13 +41,27 @@ export class PermissionService {
   }
 
   /**
+   * @name findByName
+   * @param {Context} ExecutionCtx
+   * @param {string} id
+   * @return {Promise<Permission>}
+   */
+  async findByName(executionCtx: Context, name: string): Promise<Permission> {
+    return await this.permissionRepository.findByName(executionCtx, name);
+  }
+
+  /**
    * @name update
    * @param {string} id
    * @param {Partial<PermissionDTO>} updatePermission
    * @returns {Promise<Permission>}
    */
-  async update(id: string, updatePermission: Partial<PermissionDTO>): Promise<Permission> {
-    return await this.permissionRepository.update(id, updatePermission);
+  async update(
+    executionCtx: Context,
+    id: string,
+    updatePermission: Partial<PermissionDTO>,
+  ): Promise<Permission> {
+    return await this.permissionRepository.update(executionCtx, id, updatePermission);
   }
 
   /**
@@ -55,7 +69,7 @@ export class PermissionService {
    * @param {string} id
    * @returns {Promise<void>}
    */
-  async delete(id: string): Promise<void> {
-    return await this.permissionRepository.delete(id);
+  async delete(executionCtx: Context, id: string): Promise<void> {
+    return await this.permissionRepository.delete(executionCtx, id);
   }
 }
