@@ -15,7 +15,9 @@ import { JwtStrategy } from './jwt.strategy';
 
 describe('JwtStrategy', () => {
   let jwtStrategy: JwtStrategy;
-  let configService: ConfigService;
+  const configService = {
+    get: jest.fn().mockReturnValue('ENV'),
+  };
   const entityManagerMock = () => ({
     queryBuilderMock,
   });
@@ -38,6 +40,10 @@ describe('JwtStrategy', () => {
           provide: EntityManager,
           useFactory: entityManagerMock,
         },
+        {
+          provide: ConfigService,
+          useValue: configService,
+        },
       ],
     })
       .overrideProvider(getRepositoryToken(User))
@@ -45,8 +51,6 @@ describe('JwtStrategy', () => {
       .compile();
 
     jwtStrategy = moduleRef.get<JwtStrategy>(JwtStrategy);
-    configService = moduleRef.get<ConfigService>(ConfigService);
-    configService.get = jest.fn().mockReturnValue('ENV');
   });
 
   it('should create LocalStrategy instance', async () => {

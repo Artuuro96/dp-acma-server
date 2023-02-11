@@ -18,10 +18,12 @@ describe('UserService', () => {
   let userService: UserService;
   let roleService: RoleService;
   let userRepository: UserRepository;
-  let configService: ConfigService;
   let user: User;
   let roles: Role[];
   const executionCtx = createMockExcutionCtx();
+  const configService = {
+    get: jest.fn().mockReturnValue('ENV'),
+  };
 
   const entityManagerMock = () => ({
     queryBuilderMock,
@@ -46,6 +48,10 @@ describe('UserService', () => {
           provide: EntityManager,
           useFactory: entityManagerMock,
         },
+        {
+          provide: ConfigService,
+          useValue: configService,
+        },
       ],
     }).compile();
 
@@ -53,8 +59,6 @@ describe('UserService', () => {
     userService = moduleRef.get<UserService>(UserService);
     userRepository = moduleRef.get<UserRepository>(UserRepository);
     roleService = moduleRef.get<RoleService>(RoleService);
-    configService = moduleRef.get<ConfigService>(ConfigService);
-    configService.get = jest.fn().mockReturnValue('ENV');
     mockGenSaltSync.mockImplementation(() => 'salt');
     mockHash.mockImplementation(() => 'hash');
   });

@@ -51,7 +51,6 @@ export class UserService {
       createdAt: new Date(),
       createdBy: executionCtx.userId,
     });
-    console.log(newUser);
     return await this.userRepository.create(newUser);
   }
 }
