@@ -5,7 +5,9 @@ import { UserDTO } from 'src/dtos/user.dto';
 import { PermissionService } from 'src/permission/services/permission.service';
 import { User } from 'src/repository/entities/user.entity';
 import { PermissionRepository } from 'src/repository/repositories/permission/permission.repository';
+import { RoleRepository } from 'src/repository/repositories/role/role.repository';
 import { UserRepository } from 'src/repository/repositories/user/user.repository';
+import { RoleService } from 'src/role/services/role.service';
 import { createMockExcutionCtx } from 'test/testing.utils';
 import { EntityManager } from 'typeorm';
 import { UserService } from '../services/user.service';
@@ -48,6 +50,8 @@ describe('UserController', () => {
         PermissionService,
         ConfigService,
         PermissionRepository,
+        RoleService,
+        RoleRepository,
         {
           provide: EntityManager,
           useFactory: entityManagerMock,

@@ -18,7 +18,9 @@ describe('UserService', () => {
   let userService: UserService;
   let roleService: RoleService;
   let userRepository: UserRepository;
+  let configService: ConfigService;
   let user: User;
+  let roles: Role[];
   const executionCtx = createMockExcutionCtx();
 
   const entityManagerMock = () => ({
@@ -51,6 +53,8 @@ describe('UserService', () => {
     userService = moduleRef.get<UserService>(UserService);
     userRepository = moduleRef.get<UserRepository>(UserRepository);
     roleService = moduleRef.get<RoleService>(RoleService);
+    configService = moduleRef.get<ConfigService>(ConfigService);
+    configService.get = jest.fn().mockReturnValue('ENV');
     mockGenSaltSync.mockImplementation(() => 'salt');
     mockHash.mockImplementation(() => 'hash');
   });
@@ -62,16 +66,22 @@ describe('UserService', () => {
       createdBy: 'uuid',
       deleted: false,
     });
-    userRepository.findByName = jest.fn().mockResolvedValue(user);
-    userRepository.findOne = jest.fn().mockResolvedValue(user);
-    userRepository.create = jest.fn().mockResolvedValue(user);
-    roleService.findByName = jest.fn().mockResolvedValue(
+    roles = [
       new Role({
-        id: 'id',
+        id: 'role-2',
         name: 'name',
         description: 'description',
       }),
-    );
+      new Role({
+        id: 'role-1',
+        name: 'name',
+        description: 'description',
+      }),
+    ];
+    userRepository.findByName = jest.fn().mockResolvedValue(user);
+    userRepository.findOne = jest.fn().mockResolvedValue(user);
+    userRepository.create = jest.fn().mockResolvedValue(user);
+    roleService.findByName = jest.fn().mockResolvedValueOnce(roles[0]).mockResolvedValue(roles[1]);
   });
 
   describe('findByName', () => {
@@ -103,7 +113,20 @@ describe('UserService', () => {
         active: false,
       };
       const result = await userService.create(executionCtx, userDTO);
-      expect(userRepository.create).toHaveBeenCalled();
+      expect(roleService.findByName).toHaveBeenNthCalledWith(1, 'role-1');
+      expect(roleService.findByName).toHaveBeenNthCalledWith(2, 'role-2');
+      expect(userRepository.create).toHaveBeenCalledWith({
+        name: 'Arturo',
+        lastName: 'Rodriguez',
+        secondLastName: 'Olvera',
+        email: 'arturorodr96@gmail.com',
+        roles: roles,
+        password: 'hash',
+        username: 'arturo96',
+        active: false,
+        createdAt: new Date(),
+        createdBy: 'userId',
+      });
       expect(result).toBe(user);
     });
   });

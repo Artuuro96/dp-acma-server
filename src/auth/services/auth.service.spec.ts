@@ -9,6 +9,10 @@ import { UserService } from 'src/user/services/user.service';
 import { EntityManager } from 'typeorm';
 import { AuthService } from './auth.service';
 import { compare } from 'bcrypt';
+import { RoleService } from 'src/role/services/role.service';
+import { RoleRepository } from 'src/repository/repositories/role/role.repository';
+import { PermissionService } from 'src/permission/services/permission.service';
+import { PermissionRepository } from 'src/repository/repositories/permission/permission.repository';
 jest.mock('bcrypt');
 
 const mockedCompare = compare as jest.Mock;
@@ -33,6 +37,10 @@ describe('AuthService', () => {
         ConfigService,
         UserService,
         UserRepository,
+        RoleService,
+        RoleRepository,
+        PermissionService,
+        PermissionRepository,
         {
           provide: EntityManager,
           useFactory: entityManagerMock,
