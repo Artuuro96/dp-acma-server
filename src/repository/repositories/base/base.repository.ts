@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { Context } from 'src/auth/context/execution-ctx';
 import { EntityManager, ObjectType } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class BaseRepository<T> {
@@ -10,13 +10,14 @@ export class BaseRepository<T> {
   ) {}
 
   async findOneById(id: string): Promise<T> {
-    return await this.entityManager
+    const queryResult = await this.entityManager
       .createQueryBuilder()
       .select()
       .from(this.entityClass, this.entityClass.name)
       .where('id = :id', { id })
       .andWhere('deleted = false')
       .getRawOne();
+    return queryResult;
   }
 
   async create(data: T): Promise<T> {
@@ -33,14 +34,14 @@ export class BaseRepository<T> {
       .execute();
   }
 
-  async update(id: string, data: Partial<T>): Promise<T> {
+  async update(executionCtx: Context, id: string, data: Partial<T>): Promise<T> {
     await this.entityManager
       .createQueryBuilder()
       .update(this.entityClass)
       .set({
         ...data,
         updatedAt: new Date(),
-        updatedBy: uuidv4(),
+        updatedBy: executionCtx.userId,
       })
       .where('id = :id', { id })
       .andWhere('deleted = false')
@@ -49,14 +50,14 @@ export class BaseRepository<T> {
     return await this.findOneById(id);
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(executionCtx: Context, id: string): Promise<void> {
     await this.entityManager
       .createQueryBuilder()
       .update(this.entityClass)
       .set({
         deleted: true,
         deletedAt: new Date(),
-        deletedBy: uuidv4(),
+        deletedBy: executionCtx.userId,
       })
       .where('id = :id', { id })
       .andWhere('deleted = false')

@@ -1,22 +1,15 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Session } from './session.entity';
 import { Role } from './role.entity';
+import { Module } from './module.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('varchar')
+  @Column('varchar', { length: 50 })
   name: string;
 
   @Column('varchar', { name: 'last_name' })
@@ -34,29 +27,43 @@ export class User extends BaseEntity {
   })
   roles: Role[];
 
-  @Column('varchar', { name: 'second_last_name' })
+  @Column('varchar', { name: 'second_last_name', length: 50, nullable: true })
   secondLastName: string;
 
-  @Column('varchar', { name: 'username' })
+  @Column('varchar', { name: 'username', length: 50, unique: true })
   username: string;
 
-  @Column('varchar')
+  @Column('varchar', { unique: true, length: 50 })
   email: string;
 
-  @Column('varchar', { name: 'password' })
+  @Column('varchar', { name: 'password', length: 80 })
   password: string;
 
-  @Column('varchar', { name: 'active' })
+  @Column('varchar', { name: 'active', default: true })
   active: boolean;
 
-  @Column('varchar', { array: true, name: 'old_passwords' })
+  @Column('varchar', { array: true, name: 'old_passwords', nullable: true })
   oldPasswords: string[];
 
-  @Column('smallint', { name: 'recovery_code' })
+  @Column('integer', { name: 'recovery_code', nullable: true })
   recoveryCode: string;
 
+  @Column('boolean', { default: false })
+  verified: boolean;
+
+  @ManyToMany(() => Module, (module) => module.users)
+  @JoinTable({
+    name: 'user_modules',
+    joinColumn: {
+      name: 'user_id',
+    },
+    inverseJoinColumn: {
+      name: 'module_id',
+    },
+  })
+  modules: Module[];
+
   @OneToOne(() => Session)
-  @JoinColumn()
   session: Session;
 
   constructor(user: Partial<User> = {}) {

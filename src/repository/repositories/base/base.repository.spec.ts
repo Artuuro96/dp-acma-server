@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from 'src/repository/entities/permission.entity';
+import { createMockExcutionCtx } from 'test/testing.utils';
 import { EntityManager } from 'typeorm';
 import { BaseRepository } from './base.repository';
 
@@ -12,6 +13,7 @@ describe('BaseRepository', () => {
     queryBuilderMock,
   });
   let queryBuilderMock;
+  const mockExcutionCtx = createMockExcutionCtx();
   let idsMock: string[];
 
   beforeAll(async () => {
@@ -99,7 +101,7 @@ describe('BaseRepository', () => {
       queryBuilderMock.execute = jest.fn().mockResolvedValue(permissionsMock[0]);
       entityManager.createQueryBuilder = jest.fn().mockImplementation(() => queryBuilderMock);
 
-      await baseRepository.update('id-1', {
+      await baseRepository.update(mockExcutionCtx, 'id-1', {
         name: 'name mock',
         description: 'description mock',
       });
@@ -119,7 +121,7 @@ describe('BaseRepository', () => {
       queryBuilderMock.execute = jest.fn().mockResolvedValue(permissionsMock[0]);
       entityManager.createQueryBuilder = jest.fn().mockImplementation(() => queryBuilderMock);
 
-      await baseRepository.delete('id-1');
+      await baseRepository.delete(mockExcutionCtx, 'id-1');
 
       expect(queryBuilderMock.update).toHaveBeenCalledWith(Permission);
       expect(queryBuilderMock.set).toHaveBeenCalled();

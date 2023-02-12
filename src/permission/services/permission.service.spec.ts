@@ -3,6 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { PermissionDTO } from 'src/dtos/permission.dto';
 import { Permission } from 'src/repository/entities/permission.entity';
 import { PermissionRepository } from 'src/repository/repositories/permission/permission.repository';
+import { createMockExcutionCtx } from 'test/testing.utils';
 import { EntityManager } from 'typeorm';
 import { PermissionService } from './permission.service';
 
@@ -13,6 +14,8 @@ describe('PermissionService', () => {
     queryBuilderMock,
   });
   let queryBuilderMock;
+
+  const mockExcutionCtx = createMockExcutionCtx();
 
   const permissionsMock = [
     new Permission({
@@ -59,7 +62,7 @@ describe('PermissionService', () => {
   describe('create', () => {
     it('should return the new permission created', async () => {
       permissionRepositoryMock.create = jest.fn().mockResolvedValue(permissionsMock[0]);
-      const result = await permissionService.create(permissionDTOMock);
+      const result = await permissionService.create(mockExcutionCtx, permissionDTOMock);
       expect(result).toBe(permissionsMock[0]);
     });
   });
@@ -67,7 +70,7 @@ describe('PermissionService', () => {
   describe('update', () => {
     it('should return the new permission created', async () => {
       permissionRepositoryMock.update = jest.fn().mockResolvedValue(permissionsMock[0]);
-      const result = await permissionService.update('id-1', permissionDTOMock);
+      const result = await permissionService.update(mockExcutionCtx, 'id-1', permissionDTOMock);
       expect(result).toBe(permissionsMock[0]);
     });
   });
@@ -91,7 +94,7 @@ describe('PermissionService', () => {
   describe('delete', () => {
     it('should return the new permission created', async () => {
       permissionRepositoryMock.delete = jest.fn();
-      const result = await permissionService.delete('id-1');
+      const result = await permissionService.delete(mockExcutionCtx, 'id-1');
       expect(result).toBe(undefined);
     });
   });
