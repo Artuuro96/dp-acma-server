@@ -1,4 +1,5 @@
 export interface AuthToken {
-  access_token: string;
-  expires: string;
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: string;
 }

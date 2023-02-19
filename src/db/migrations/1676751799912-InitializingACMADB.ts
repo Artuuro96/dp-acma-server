@@ -4,12 +4,12 @@ import { User } from 'src/repository/entities/user.entity';
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 
-export class InitializingACMADB1675661409272 implements MigrationInterface {
-  name = 'InitializingACMADB1675661409272';
+export class InitializingACMADB1676751799912 implements MigrationInterface {
+  name = 'InitializingACMADB1676751799912';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE "users" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL, "created_by" uuid NOT NULL, "updated_at" TIMESTAMP, "updated_by" uuid, "deleted_at" TIMESTAMP, "deleted_by" uuid, "deleted" boolean NOT NULL DEFAULT false, CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "sessions" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL, "created_by" uuid NOT NULL, "updated_at" TIMESTAMP, "updated_by" uuid, "deleted_at" TIMESTAMP, "deleted_by" uuid, "deleted" boolean NOT NULL DEFAULT false, "user_id" uuid NOT NULL, CONSTRAINT "REL_085d540d9f418cfbdc7bd55bb1" UNIQUE ("user_id"), CONSTRAINT "PK_3238ef96f18b355b671619111bc" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "permissions" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL, "created_by" uuid NOT NULL, "updated_at" TIMESTAMP, "updated_by" uuid, "deleted_at" TIMESTAMP, "deleted_by" uuid, "deleted" boolean NOT NULL DEFAULT false, "name" character varying NOT NULL, "description" character varying, CONSTRAINT "UQ_48ce552495d14eae9b187bb6716" UNIQUE ("name"), CONSTRAINT "PK_920331560282b8bd21bb02290df" PRIMARY KEY ("id"))`,
@@ -18,10 +18,10 @@ export class InitializingACMADB1675661409272 implements MigrationInterface {
       `CREATE TABLE "roles" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL, "created_by" uuid NOT NULL, "updated_at" TIMESTAMP, "updated_by" uuid, "deleted_at" TIMESTAMP, "deleted_by" uuid, "deleted" boolean NOT NULL DEFAULT false, "name" character varying(50) NOT NULL, "description" character varying(50) NOT NULL, CONSTRAINT "PK_c1433d71a4838793a49dcad46ab" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "modules" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL, "created_by" uuid NOT NULL, "updated_at" TIMESTAMP, "updated_by" uuid, "deleted_at" TIMESTAMP, "deleted_by" uuid, "deleted" boolean NOT NULL DEFAULT false, "name" character varying(25) NOT NULL, "text" character varying(25) NOT NULL, "description" character varying(50) NOT NULL, "path" character varying(25) NOT NULL, CONSTRAINT "UQ_8cd1abde4b70e59644c98668c06" UNIQUE ("name"), CONSTRAINT "UQ_4838a66f0e1dabd39dd9d5d138b" UNIQUE ("path"), CONSTRAINT "PK_7dbefd488bd96c5bf31f0ce0c95" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "users" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL, "created_by" uuid NOT NULL, "updated_at" TIMESTAMP, "updated_by" uuid, "deleted_at" TIMESTAMP, "deleted_by" uuid, "deleted" boolean NOT NULL DEFAULT false, "name" character varying(50) NOT NULL, "last_name" character varying NOT NULL, "second_last_name" character varying(50), "username" character varying(50) NOT NULL, "email" character varying(50) NOT NULL, "password" character varying(80) NOT NULL, "active" character varying NOT NULL DEFAULT true, "old_passwords" character varying array, "recovery_code" integer, "verified" boolean NOT NULL DEFAULT false, "refresh_token" character varying, CONSTRAINT "UQ_fe0bb3f6520ee0469504521e710" UNIQUE ("username"), CONSTRAINT "UQ_97672ac88f789774dd47f7c8be3" UNIQUE ("email"), CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "sessions" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL, "created_by" uuid NOT NULL, "updated_at" TIMESTAMP, "updated_by" uuid, "deleted_at" TIMESTAMP, "deleted_by" uuid, "deleted" boolean NOT NULL DEFAULT false, "user_id" uuid NOT NULL, CONSTRAINT "REL_085d540d9f418cfbdc7bd55bb1" UNIQUE ("user_id"), CONSTRAINT "PK_3238ef96f18b355b671619111bc" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "modules" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" TIMESTAMP NOT NULL, "created_by" uuid NOT NULL, "updated_at" TIMESTAMP, "updated_by" uuid, "deleted_at" TIMESTAMP, "deleted_by" uuid, "deleted" boolean NOT NULL DEFAULT false, "name" character varying(25) NOT NULL, "text" character varying(25) NOT NULL, "description" character varying(50) NOT NULL, "path" character varying(25) NOT NULL, CONSTRAINT "UQ_8cd1abde4b70e59644c98668c06" UNIQUE ("name"), CONSTRAINT "UQ_4838a66f0e1dabd39dd9d5d138b" UNIQUE ("path"), CONSTRAINT "PK_7dbefd488bd96c5bf31f0ce0c95" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "role_permissions" ("role_id" uuid NOT NULL, "permission_id" uuid NOT NULL, CONSTRAINT "PK_25d24010f53bb80b78e412c9656" PRIMARY KEY ("role_id", "permission_id"))`,
@@ -42,22 +42,6 @@ export class InitializingACMADB1675661409272 implements MigrationInterface {
     );
     await queryRunner.query(`CREATE INDEX "IDX_5842b0e6bae3cf2f28d36f5b35" ON "user_modules" ("user_id") `);
     await queryRunner.query(`CREATE INDEX "IDX_8d557af52554a188e079b198e9" ON "user_modules" ("module_id") `);
-    await queryRunner.query(`ALTER TABLE "users" ADD "name" character varying(50) NOT NULL`);
-    await queryRunner.query(`ALTER TABLE "users" ADD "last_name" character varying NOT NULL`);
-    await queryRunner.query(`ALTER TABLE "users" ADD "second_last_name" character varying(50)`);
-    await queryRunner.query(`ALTER TABLE "users" ADD "username" character varying(50) NOT NULL`);
-    await queryRunner.query(
-      `ALTER TABLE "users" ADD CONSTRAINT "UQ_fe0bb3f6520ee0469504521e710" UNIQUE ("username")`,
-    );
-    await queryRunner.query(`ALTER TABLE "users" ADD "email" character varying(50) NOT NULL`);
-    await queryRunner.query(
-      `ALTER TABLE "users" ADD CONSTRAINT "UQ_97672ac88f789774dd47f7c8be3" UNIQUE ("email")`,
-    );
-    await queryRunner.query(`ALTER TABLE "users" ADD "password" character varying(80) NOT NULL`);
-    await queryRunner.query(`ALTER TABLE "users" ADD "active" character varying NOT NULL DEFAULT true`);
-    await queryRunner.query(`ALTER TABLE "users" ADD "old_passwords" character varying array`);
-    await queryRunner.query(`ALTER TABLE "users" ADD "recovery_code" integer`);
-    await queryRunner.query(`ALTER TABLE "users" ADD "verified" boolean NOT NULL DEFAULT false`);
     await queryRunner.query(
       `ALTER TABLE "sessions" ADD CONSTRAINT "FK_085d540d9f418cfbdc7bd55bb19" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
@@ -106,18 +90,6 @@ export class InitializingACMADB1675661409272 implements MigrationInterface {
       `ALTER TABLE "role_permissions" DROP CONSTRAINT "FK_178199805b901ccd220ab7740ec"`,
     );
     await queryRunner.query(`ALTER TABLE "sessions" DROP CONSTRAINT "FK_085d540d9f418cfbdc7bd55bb19"`);
-    await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "verified"`);
-    await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "recovery_code"`);
-    await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "old_passwords"`);
-    await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "active"`);
-    await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "password"`);
-    await queryRunner.query(`ALTER TABLE "users" DROP CONSTRAINT "UQ_97672ac88f789774dd47f7c8be3"`);
-    await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "email"`);
-    await queryRunner.query(`ALTER TABLE "users" DROP CONSTRAINT "UQ_fe0bb3f6520ee0469504521e710"`);
-    await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "username"`);
-    await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "second_last_name"`);
-    await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "last_name"`);
-    await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "name"`);
     await queryRunner.query(`DROP INDEX "public"."IDX_8d557af52554a188e079b198e9"`);
     await queryRunner.query(`DROP INDEX "public"."IDX_5842b0e6bae3cf2f28d36f5b35"`);
     await queryRunner.query(`DROP TABLE "user_modules"`);
@@ -127,10 +99,10 @@ export class InitializingACMADB1675661409272 implements MigrationInterface {
     await queryRunner.query(`DROP INDEX "public"."IDX_17022daf3f885f7d35423e9971"`);
     await queryRunner.query(`DROP INDEX "public"."IDX_178199805b901ccd220ab7740e"`);
     await queryRunner.query(`DROP TABLE "role_permissions"`);
-    await queryRunner.query(`DROP TABLE "sessions"`);
     await queryRunner.query(`DROP TABLE "modules"`);
+    await queryRunner.query(`DROP TABLE "users"`);
     await queryRunner.query(`DROP TABLE "roles"`);
     await queryRunner.query(`DROP TABLE "permissions"`);
-    await queryRunner.query(`DROP TABLE "users"`);
+    await queryRunner.query(`DROP TABLE "sessions"`);
   }
 }

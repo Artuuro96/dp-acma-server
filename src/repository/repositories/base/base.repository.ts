@@ -17,6 +17,8 @@ export class BaseRepository<T> {
       .where('id = :id', { id })
       .andWhere('deleted = false')
       .getRawOne();
+
+    console.log("=============>", typeof(queryResult));
     return queryResult;
   }
 

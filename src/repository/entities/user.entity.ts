@@ -66,6 +66,9 @@ export class User extends BaseEntity {
   @OneToOne(() => Session)
   session: Session;
 
+  @Column('varchar', { name: 'refresh_token', nullable: true })
+  refreshToken: string;
+
   constructor(user: Partial<User> = {}) {
     super(user);
     Object.assign(this, user);

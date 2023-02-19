@@ -20,8 +20,8 @@ export class UserService {
    * @param {string} name - name to look for
    * @returns {Promise<User>}
    */
-  async findByName(name: string): Promise<User> {
-    return await this.userRepository.findByName(name);
+  async findById(id: string): Promise<User> {
+    return await this.userRepository.findOneById(id);
   }
 
   /**
@@ -31,6 +31,22 @@ export class UserService {
    */
   async findOne(username: string): Promise<User> {
     return await this.userRepository.findOne(username);
+  }
+
+  /**
+   * @name findOneById
+   * @param {string} id
+   */
+  async findOneById(id: string): Promise<User> {
+    return await this.userRepository.findOneById(id);
+  }
+
+  /**
+   * @name updateById
+   * @param {string} id
+   */
+  async updateById(executionCtx: Context, id: string, data: Partial<User>) {
+    return await this.userRepository.update(executionCtx, id, data);
   }
 
   /**

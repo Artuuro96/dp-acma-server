@@ -13,11 +13,11 @@ export class UserRepository extends BaseRepository<User> {
    * Finds user by id
    * @param {string}       id      - Unique identifier for user
    */
-  async findByName(name: string): Promise<User> {
+  async findByUsername(username: string): Promise<User> {
     const queryResult = await this.entityManager
       .createQueryBuilder(User, 'user')
       .select('user')
-      .where('user.name = :name', { name })
+      .where('user.username = :username', { username })
       .andWhere('user.deleted = false')
       .getOne();
 
