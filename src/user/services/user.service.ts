@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { UserUpdateDTO } from 'src/dtos/user-update.dto';
 import { UserDTO } from 'src/dtos/user.dto';
 import { User } from 'src/repository/entities/user.entity';
 import { UserRepository } from 'src/repository/repositories/user/user.repository';
@@ -16,24 +17,6 @@ export class UserService {
   ) {}
 
   /**
-   * @name findByName
-   * @param {string} name - name to look for
-   * @returns {Promise<User>}
-   */
-  async findById(id: string): Promise<User> {
-    return await this.userRepository.findOneById(id);
-  }
-
-  /**
-   * @name findOne
-   * @param {string} username - username to look for
-   * @returns {Promise<User>}
-   */
-  async findOne(username: string): Promise<User> {
-    return await this.userRepository.findOne(username);
-  }
-
-  /**
    * @name findOneById
    * @param {string} id
    */
@@ -42,15 +25,52 @@ export class UserService {
   }
 
   /**
-   * @name updateById
-   * @param {string} id
+   * @name findOne
+   * @param {string} username - username to look for
+   * @returns {Promise<User>}
    */
-  async updateById(executionCtx: Context, id: string, data: Partial<User>) {
-    return await this.userRepository.update(executionCtx, id, data);
+  async findOneByUsername(username: string): Promise<User> {
+    return await this.userRepository.findOneByUsername(username);
   }
 
   /**
+   * @name updateById
+   * @param {Context} executionCtx
+   * @param {id} id
+   * @param {Partial<UserUpdateDTO>}
+   * @returns {Promise<User>}
+   */
+  async updateById(executionCtx: Context, id: string, user: Partial<UserUpdateDTO>): Promise<User> {
+    const userToUpdate = new User({
+      ...user,
+    });
+    await this.userRepository.update(executionCtx, id, userToUpdate);
+    return this.userRepository.findOneById(id);
+  }
+  async assignRolesByUserId(executionCtx: Context, id: string, roles: string[]): Promise<User> {
+    //const userRoles = await this.roleService.findRolesByUserId(id);
+    const rolesPromise = roles.map((rol) => {
+      return this.roleService.findByName(rol);
+    });
+    const rolesFound = await Promise.all(rolesPromise);
+    console.log(rolesFound)
+    //await this.userRepository.update(executionCtx, id, { roles: rolesFound });
+    return this.userRepository.findOneById(id);
+  }
+  /* async assignRoles(executionCtx: Context, id: string, roles: string[]): Promise<User> {
+    const 
+    
+    console.log(rolesPromise);
+    
+    const userToUpdate = new User({
+      ...user,
+      roles: rolesFound,
+    });
+  } */
+
+  /**
    * @name create
+   * @param {Context} executionCtx
    * @param {UserDTO} user - user data tranfer object to store on the DB
    * @returns {Promise<User>}
    */
@@ -68,5 +88,15 @@ export class UserService {
       createdBy: executionCtx.userId,
     });
     return await this.userRepository.create(newUser);
+  }
+
+  /**
+   * @name delete
+   * @param {Context} executionCtx
+   * @param {id} id
+   * @returns {Promise<void>}
+   */
+  async delete(executionCtx: Context, id: string): Promise<void> {
+    return await this.userRepository.delete(executionCtx, id);
   }
 }

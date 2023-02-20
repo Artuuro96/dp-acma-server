@@ -4,6 +4,8 @@ import { RoleDTO } from 'src/dtos/role.dto';
 import { PermissionService } from 'src/permission/services/permission.service';
 import { Role } from 'src/repository/entities/role.entity';
 import { RoleRepository } from 'src/repository/repositories/role/role.repository';
+import { isEmpty, isNil } from 'lodash';
+import { RoleUpdateDTO } from 'src/dtos/role-update.dto';
 
 @Injectable()
 export class RoleService {
@@ -12,6 +14,12 @@ export class RoleService {
     private readonly permissionService: PermissionService,
   ) {}
 
+  /**
+   * @name create
+   * @param {Context} executionCtx
+   * @param {RoleDTO} role
+   * @returns {Promise<Role>}
+   */
   async create(executionCtx: Context, role: RoleDTO): Promise<Role> {
     const { permissions } = role;
     const permissionsPromise = permissions.map((permission) => {
@@ -23,13 +31,37 @@ export class RoleService {
       ...role,
       createdBy: executionCtx.userId,
       createdAt: new Date(),
-      permissions: foundPermissions,
+      //permissions: foundPermissions,
     });
 
     return await this.roleRepository.create(newRole);
   }
 
+  /**
+   * @name update
+   * @param {Context} executionCtx
+   * @param {id} id
+   * @param {Partial<RoleDTO>} role
+   * @returns {Promise<Role>}
+   */
+  async updateById(executionCtx: Context, id: string, role: Partial<RoleUpdateDTO>): Promise<Role> {
+    const roleToUpdate = new Role({
+      ...role,
+    });
+    await this.roleRepository.update(executionCtx, id, roleToUpdate);
+    return await this.roleRepository.findOneById(id);
+  }
+
+  /*async findRolesByUserId(userId: string): Pomise<Role[]> {
+   
+  }*/
+
+
   async findByName(name: string): Promise<Role> {
     return this.roleRepository.findByName(name);
+  }
+
+  async findOneById(id: string): Promise<Role> {
+    return this.roleRepository.findOneById(id);
   }
 }

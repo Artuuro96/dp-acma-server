@@ -23,7 +23,7 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {
-    const user = await this.userService.findOne(username);
+    const user = await this.userService.findOneByUsername(username);
     if (!user) {
       throw new NotFoundException('username is not found, try again');
     }
@@ -43,7 +43,7 @@ export class AuthService {
       lastName: user.lastName,
       secondLastName: user.secondLastName,
       email: user.email,
-      roles: user.roles,
+      //roles: user.roles,
     };
 
     const token = await this.generateTokens(payload);
@@ -69,13 +69,23 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const isRefreshTokenMatching = compare(refreshToken, user.refreshToken);
+    const isRefreshTokenMatching = await compare(refreshToken, user.refreshToken);
 
-    if (isRefreshTokenMatching) {
+    if (!isRefreshTokenMatching) {
       throw new UnauthorizedException();
     }
 
-    const token = await this.generateTokens(executionCtx);
+    const payload = {
+      userId: executionCtx.userId,
+      username: executionCtx.username,
+      name: executionCtx.name,
+      lastName: executionCtx.lastName,
+      secondLastName: executionCtx.secondLastName,
+      email: executionCtx.email,
+      roles: executionCtx.roles,
+    };
+
+    const token = await this.generateTokens(payload);
 
     const updatedUser = await this.userService.updateById(new Context(user), user.id, {
       refreshToken: token.refreshHashed,
@@ -84,7 +94,12 @@ export class AuthService {
     if (isNil(updatedUser)) {
       throw new InternalServerErrorException('Error trying to update refresh token');
     }
-    return token;
+
+    return {
+      accessToken: token.access,
+      refreshToken: token.refresh,
+      expiresIn: this.config.get('EXPIRES_IN'),
+    };
   }
 
   private async generateTokens(payload: any): Promise<Token> {

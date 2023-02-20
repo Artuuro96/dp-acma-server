@@ -3,7 +3,7 @@ import { PermissionDTO } from 'src/dtos/permission.dto';
 import { Permission } from '../../repository/entities/permission.entity';
 import { PermissionRepository } from '../../repository/repositories/permission/permission.repository';
 import { Context } from 'src/auth/context/execution-ctx';
-
+import { isNil } from 'lodash';
 @Injectable()
 export class PermissionService {
   constructor(private readonly permissionRepository: PermissionRepository) {}
@@ -23,20 +23,11 @@ export class PermissionService {
   }
 
   /**
-   * @name findByIds
-   * @param {string[]} ids
-   * @returns {Promise<Permission[]>}
-   */
-  async findByIds(ids: string[]): Promise<Permission[]> {
-    return await this.permissionRepository.findByIds(ids);
-  }
-
-  /**
    * @name findById
    * @param {string} id
    * @returns {Promise<Permission>}
    */
-  async findById(id: string): Promise<Permission> {
+  async findOneById(id: string): Promise<Permission> {
     return await this.permissionRepository.findOneById(id);
   }
 
@@ -47,7 +38,7 @@ export class PermissionService {
    * @return {Promise<Permission>}
    */
   async findByName(executionCtx: Context, name: string): Promise<Permission> {
-    return await this.permissionRepository.findByName(executionCtx, name);
+    return await this.permissionRepository.findByName(name);
   }
 
   /**
@@ -61,7 +52,11 @@ export class PermissionService {
     id: string,
     updatePermission: Partial<PermissionDTO>,
   ): Promise<Permission> {
-    return await this.permissionRepository.update(executionCtx, id, updatePermission);
+    const permissionToUpdate = new Permission({
+      ...updatePermission,
+    });
+    await this.permissionRepository.update(executionCtx, id, permissionToUpdate);
+    return await this.permissionRepository.findOneById(id);
   }
 
   /**

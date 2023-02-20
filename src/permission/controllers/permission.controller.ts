@@ -19,17 +19,12 @@ export class PermissionController {
     return await this.permissionService.create(executionCtx, permissionDTO);
   }
 
-  @Get()
-  async findByIds(@Query('ids') ids: string[]): Promise<Permission[]> {
-    return await this.permissionService.findByIds(ids);
-  }
-
-  @Get(':id')
+  @Get('/:id')
   async findById(@Param('id') id: string): Promise<Permission> {
-    return await this.permissionService.findById(id);
+    return await this.permissionService.findOneById(id);
   }
 
-  @Patch(':id')
+  @Patch('/:id')
   async update(
     @ExecutionCtx() executionCtx: Context,
     @Param('id') id: string,
@@ -38,7 +33,7 @@ export class PermissionController {
     return await this.permissionService.update(executionCtx, id, updatePermissionDTO);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   async delete(@ExecutionCtx() executionCtx: Context, @Param('id') id: string): Promise<void> {
     return await this.permissionService.delete(executionCtx, id);
   }

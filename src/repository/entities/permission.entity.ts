@@ -1,6 +1,6 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { Role } from './role.entity';
+import { RolePermissions } from './role-permissions.entity';
 
 @Entity('permissions')
 export class Permission extends BaseEntity {
@@ -13,8 +13,8 @@ export class Permission extends BaseEntity {
   @Column('varchar', { nullable: true })
   description: string;
 
-  @ManyToMany(() => Role, (role) => role.permissions)
-  roles: Role[];
+  @OneToMany(() => RolePermissions, (rolePermission) => rolePermission.permission)
+  rolePermission: RolePermissions[];
 
   constructor(permission: Partial<Permission>) {
     super(permission);

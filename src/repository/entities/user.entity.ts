@@ -1,8 +1,8 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Session } from './session.entity';
-import { Role } from './role.entity';
-import { Module } from './module.entity';
+import { UserModules } from './user-modules.entity';
+import { UserRoles } from './user-roles.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -14,18 +14,6 @@ export class User extends BaseEntity {
 
   @Column('varchar', { name: 'last_name' })
   lastName: string;
-
-  @ManyToMany(() => Role, (role) => role.users)
-  @JoinTable({
-    name: 'user_roles',
-    joinColumn: {
-      name: 'user_id',
-    },
-    inverseJoinColumn: {
-      name: 'role_id',
-    },
-  })
-  roles: Role[];
 
   @Column('varchar', { name: 'second_last_name', length: 50, nullable: true })
   secondLastName: string;
@@ -51,17 +39,11 @@ export class User extends BaseEntity {
   @Column('boolean', { default: false })
   verified: boolean;
 
-  @ManyToMany(() => Module, (module) => module.users)
-  @JoinTable({
-    name: 'user_modules',
-    joinColumn: {
-      name: 'user_id',
-    },
-    inverseJoinColumn: {
-      name: 'module_id',
-    },
-  })
-  modules: Module[];
+  @OneToMany(() => UserRoles, (userRoles) => userRoles.user)
+  userRoles: UserRoles[];
+
+  @OneToMany(() => UserModules, (UserModules) => UserModules.user)
+  userModules: UserModules[];
 
   @OneToOne(() => Session)
   session: Session;
