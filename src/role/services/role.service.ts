@@ -4,14 +4,15 @@ import { RoleDTO } from 'src/dtos/role.dto';
 import { PermissionService } from 'src/permission/services/permission.service';
 import { Role } from 'src/repository/entities/role.entity';
 import { RoleRepository } from 'src/repository/repositories/role/role.repository';
-import { isEmpty, isNil } from 'lodash';
 import { RoleUpdateDTO } from 'src/dtos/role-update.dto';
+import { RolePermissionService } from 'src/role-permission/services/role-permission.service';
 
 @Injectable()
 export class RoleService {
   constructor(
     private readonly roleRepository: RoleRepository,
     private readonly permissionService: PermissionService,
+    private readonly rolePermissionService: RolePermissionService,
   ) {}
 
   /**
@@ -22,19 +23,23 @@ export class RoleService {
    */
   async create(executionCtx: Context, role: RoleDTO): Promise<Role> {
     const { permissions } = role;
+
     const permissionsPromise = permissions.map((permission) => {
       return this.permissionService.findByName(executionCtx, permission);
     });
 
     const foundPermissions = await Promise.all(permissionsPromise);
-    const newRole = new Role({
-      ...role,
-      createdBy: executionCtx.userId,
-      createdAt: new Date(),
-      //permissions: foundPermissions,
-    });
 
-    return await this.roleRepository.create(newRole);
+    const newRole = new Role();
+    newRole.name = role.name;
+    newRole.description = role.description;
+    newRole.createdBy = executionCtx.userId;
+    newRole.createdAt = new Date();
+
+    const createdRole = await this.roleRepository.create(newRole);
+    await this.rolePermissionService.create(createdRole, foundPermissions);
+
+    return createdRole;
   }
 
   /**
@@ -55,7 +60,6 @@ export class RoleService {
   /*async findRolesByUserId(userId: string): Pomise<Role[]> {
    
   }*/
-
 
   async findByName(name: string): Promise<Role> {
     return this.roleRepository.findByName(name);

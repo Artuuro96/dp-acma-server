@@ -3,8 +3,8 @@ import { Permission } from './permission.entity';
 import { Role } from './role.entity';
 
 @Entity('role_permissions')
-export class RolePermissions {
-  @PrimaryGeneratedColumn()
+export class RolePermission {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @ManyToOne(() => Role)
@@ -14,4 +14,8 @@ export class RolePermissions {
   @ManyToOne(() => Permission)
   @JoinColumn({ name: 'permission_id', referencedColumnName: 'id' })
   permission: Permission;
+
+  constructor(rolePermission: Partial<RolePermission> = {}) {
+    Object.assign(this, rolePermission);
+  }
 }

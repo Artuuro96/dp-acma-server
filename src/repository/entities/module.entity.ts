@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { UserModules } from './user-modules.entity';
+import { UserModule } from './user-module.entity';
 
 @Entity('modules')
 export class Module extends BaseEntity {
@@ -19,8 +19,8 @@ export class Module extends BaseEntity {
   @Column('varchar', { length: 25, unique: true })
   path: string;
 
-  @OneToMany(() => UserModules, (userModules) => userModules.module)
-  userModules: UserModules[];
+  @OneToMany(() => UserModule, (userModule) => userModule.module)
+  userModules: UserModule[];
 
   constructor(module: Partial<Module> = {}) {
     super(module);

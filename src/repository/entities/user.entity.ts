@@ -1,8 +1,9 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from './base.entity';
+import { Role } from './role.entity';
 import { Session } from './session.entity';
-import { UserModules } from './user-modules.entity';
-import { UserRoles } from './user-roles.entity';
+import { UserModule } from './user-module.entity';
+import { UserRole } from './user-role.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -39,11 +40,13 @@ export class User extends BaseEntity {
   @Column('boolean', { default: false })
   verified: boolean;
 
-  @OneToMany(() => UserRoles, (userRoles) => userRoles.user)
-  userRoles: UserRoles[];
+  @OneToMany(() => UserRole, (userRole) => userRole.user)
+  userRoles: UserRole[];
 
-  @OneToMany(() => UserModules, (UserModules) => UserModules.user)
-  userModules: UserModules[];
+  roles: Role[];
+
+  @OneToMany(() => UserModule, (UserModule) => UserModule.user)
+  userModules: UserModule[];
 
   @OneToOne(() => Session)
   session: Session;

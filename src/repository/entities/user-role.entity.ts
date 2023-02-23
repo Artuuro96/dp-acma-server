@@ -3,8 +3,8 @@ import { Role } from './role.entity';
 import { User } from './user.entity';
 
 @Entity('user_roles')
-export class UserRoles {
-  @PrimaryGeneratedColumn()
+export class UserRole {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @ManyToOne(() => User)
@@ -14,4 +14,8 @@ export class UserRoles {
   @ManyToOne(() => Role)
   @JoinColumn({ name: 'role_id', referencedColumnName: 'id' })
   role: Role;
+
+  constructor(userRole: Partial<UserRole> = {}) {
+    Object.assign(this, userRole);
+  }
 }

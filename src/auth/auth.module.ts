@@ -14,6 +14,8 @@ import { PermissionService } from 'src/permission/services/permission.service';
 import { PermissionModule } from 'src/permission/permission.module';
 import { RoleService } from 'src/role/services/role.service';
 import { RefreshJwtStrategy } from './strategies/refresh-jwt.strategy';
+import { RolePermissionService } from 'src/role-permission/services/role-permission.service';
+import { UserRoleService } from 'src/user-role/services/user-role.service';
 
 @Module({
   imports: [
@@ -44,6 +46,8 @@ import { RefreshJwtStrategy } from './strategies/refresh-jwt.strategy';
     RefreshJwtStrategy,
     PermissionService,
     RoleService,
+    RolePermissionService,
+    UserRoleService,
   ],
   exports: [AuthService],
 })

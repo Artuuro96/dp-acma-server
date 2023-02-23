@@ -13,6 +13,7 @@ import { compare, hash, genSaltSync } from 'bcrypt';
 import { Context } from '../context/execution-ctx';
 import { isNil } from 'lodash';
 import { Token } from '../interfaces/token.interface';
+import { Role } from 'src/repository/entities/role.entity';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +32,6 @@ export class AuthService {
     if (!isPasswordMathing) {
       throw new UnauthorizedException();
     }
-
     return user;
   }
 
@@ -43,7 +43,7 @@ export class AuthService {
       lastName: user.lastName,
       secondLastName: user.secondLastName,
       email: user.email,
-      //roles: user.roles,
+      roles: user.roles?.map((role) => new Role({ id: role.id, name: role.name })),
     };
 
     const token = await this.generateTokens(payload);

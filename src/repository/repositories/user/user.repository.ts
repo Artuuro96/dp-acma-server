@@ -1,5 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
+import { Role } from 'src/repository/entities/role.entity';
 import { EntityManager } from 'typeorm';
 import { User } from '../../entities/user.entity';
 import { BaseRepository } from '../base/base.repository';
@@ -13,6 +14,10 @@ export class UserRepository extends BaseRepository<User> {
     const queryResult = await this.entityManager
       .createQueryBuilder(User, 'user')
       .select('user')
+      .addSelect('userRoles')
+      .addSelect('roles')
+      .leftJoin('user.userRoles', 'userRoles')
+      .leftJoin('userRoles.role', 'roles')
       .where('user.username = :username', { username })
       .andWhere('user.deleted = false')
       .getOne();
@@ -20,7 +25,8 @@ export class UserRepository extends BaseRepository<User> {
     if (!queryResult) {
       throw new NotFoundException(`user ${username} not found`);
     }
-    return queryResult;
+    const roles = queryResult.userRoles?.map((userRole) => new Role(userRole.role));
+    return new User({ ...queryResult, roles });
   }
 
   async findOneById(id: string): Promise<User> {

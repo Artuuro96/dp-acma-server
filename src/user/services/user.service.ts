@@ -7,11 +7,13 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from 'src/config/config.service';
 import { RoleService } from 'src/role/services/role.service';
 import { Context } from 'src/auth/context/execution-ctx';
+import { UserRoleService } from 'src/user-role/services/user-role.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
+    private readonly userRoleService: UserRoleService,
     private readonly roleService: RoleService,
     private readonly config: ConfigService,
   ) {}
@@ -47,17 +49,18 @@ export class UserService {
     await this.userRepository.update(executionCtx, id, userToUpdate);
     return this.userRepository.findOneById(id);
   }
+
   async assignRolesByUserId(executionCtx: Context, id: string, roles: string[]): Promise<User> {
     //const userRoles = await this.roleService.findRolesByUserId(id);
     const rolesPromise = roles.map((rol) => {
       return this.roleService.findByName(rol);
     });
     const rolesFound = await Promise.all(rolesPromise);
-    console.log(rolesFound)
+    console.log(rolesFound);
     //await this.userRepository.update(executionCtx, id, { roles: rolesFound });
     return this.userRepository.findOneById(id);
   }
-  /* async assignRoles(executionCtx: Context, id: string, roles: string[]): Promise<User> {
+  /*async assignRoles(executionCtx: Context, id: string, roles: string[]): Promise<User> {
     const 
     
     console.log(rolesPromise);
@@ -66,7 +69,7 @@ export class UserService {
       ...user,
       roles: rolesFound,
     });
-  } */
+  }*/
 
   /**
    * @name create
@@ -78,16 +81,25 @@ export class UserService {
     const rolesPromise = user.roles.map((rol) => {
       return this.roleService.findByName(rol);
     });
+
     const rolesFound = await Promise.all(rolesPromise);
     const salt = bcrypt.genSaltSync(Number(this.config.get('SALT')));
     user.password = await bcrypt.hash(user.password, salt);
-    const newUser = new User({
-      ...user,
-      roles: rolesFound,
-      createdAt: new Date(),
-      createdBy: executionCtx.userId,
-    });
-    return await this.userRepository.create(newUser);
+
+    const newUser = new User();
+    newUser.name = user.name;
+    newUser.lastName = user.lastName;
+    newUser.secondLastName = user.secondLastName;
+    newUser.email = user.email;
+    newUser.username = user.username;
+    newUser.password = user.password;
+    newUser.createdAt = new Date();
+    newUser.createdBy = executionCtx.userId;
+
+    const createdUser = await this.userRepository.create(newUser);
+    await this.userRoleService.create(createdUser, rolesFound);
+
+    return createdUser;
   }
 
   /**

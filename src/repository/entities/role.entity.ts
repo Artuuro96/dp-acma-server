@@ -1,7 +1,7 @@
 import { BaseEntity } from './base.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { UserRoles } from './user-roles.entity';
-import { RolePermissions } from './role-permissions.entity';
+import { UserRole } from './user-role.entity';
+import { RolePermission } from './role-permission.entity';
 
 @Entity('roles')
 export class Role extends BaseEntity {
@@ -14,11 +14,11 @@ export class Role extends BaseEntity {
   @Column('varchar', { length: 50 })
   description: string;
 
-  @OneToMany(() => UserRoles, (userRoles) => userRoles.role)
-  userRoles: UserRoles[];
+  @OneToMany(() => UserRole, (userRole) => userRole.role)
+  userRoles: UserRole[];
 
-  @OneToMany(() => RolePermissions, (rolePermissions) => rolePermissions.role)
-  rolePermissions: RolePermissions[];
+  @OneToMany(() => RolePermission, (rolePermission) => rolePermission.role)
+  rolePermissions: RolePermission[];
 
   constructor(role: Partial<Role> = {}) {
     super(role);
