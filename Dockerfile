@@ -1,21 +1,13 @@
-# Base image
-FROM node:16-alpine
-ENV NODE_ENV production
+FROM node:16
 
-# Create app directory
-WORKDIR /usr/src/ap
+WORKDIR /app
 
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-COPY package*.json ./
+ADD package.json /app/package.json
 
-# Install app dependencies
-RUN npm ci
+RUN npm install
 
-# Bundle app source
-COPY . .
+ADD . /app
 
-# Creates a "dist" folder with the production build
-RUN npm run build
+EXPOSE 80
 
-# Start the server using the production build
-CMD [ "node", "dist/main.js" ]
+CMD ["npm", "run", "start", "prod"]
