@@ -73,7 +73,19 @@ jobs:
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker build -t build-args: |
+          POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} 
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }} 
+          SECRET_TOKEN=${{ secrets.SECRET_TOKEN }} 
+          EXPIRES_IN=${{ secrets.EXPIRES_IN }} 
+          REFRESH_EXPIRES_IN=${{ secrets.REFRESH_EXPIRES_IN }} 
+          SALT=${{ secrets.SALT }} 
+          USERNAME=${{ secrets.USERNAME }} 
+          PASSWORD=${{ secrets.PASSWORD }} 
+          EMAIL=${{ secrets.EMAIL }} 
+        $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
