@@ -12,4 +12,6 @@ ADD . /app
 
 EXPOSE 80
 
-CMD ["npm", "run", "start", "prod"]
+CMD npm run migration:generate
+
+CMD npm run start:prod
