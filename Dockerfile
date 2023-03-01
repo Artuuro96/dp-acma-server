@@ -1,15 +1,39 @@
-FROM node:16
-
-ENV NODE_ENV=production
+# Building layer
+FROM node:16-alpine as development
 
 WORKDIR /app
 
-ADD package.json /app/package.json
+# Copy configuration files
+COPY tsconfig*.json ./
+COPY package*.json ./
 
-RUN npm install
+# Install dependencies from package-lock.json, see https://docs.npmjs.com/cli/v7/commands/npm-ci
+RUN npm ci
 
-ADD . /app
+# Copy application sources (.ts, .tsx, js)
+COPY src/ src/
 
-EXPOSE 80
+# Build application (produces dist/ folder)
+RUN npm run build
 
-CMD ["npm", "run", "start", "prod"]
+# Runtime (production) layer
+FROM node:16-alpine as production
+
+WORKDIR /app
+
+##POSTGRES PROD
+ENV NODE_ENV=production
+# Copy dependencies files
+COPY package*.json ./
+
+# Install runtime dependecies (without dev/test dependecies)
+RUN npm ci --omit=dev
+
+# Copy production build
+COPY --from=development /app/dist/ ./dist/
+
+# Expose application port
+EXPOSE 3000
+
+# Start application
+CMD [ "node", "dist/main.js" ]
