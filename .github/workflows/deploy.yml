@@ -39,18 +39,6 @@ env:
                                                # file, e.g. .aws/task-definition.json
   CONTAINER_NAME: acma-server         # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
-  POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
-  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }} 
-  POSTGRES_DB: ${{ secrets.POSTGRES_DB }} 
-  SECRET_TOKEN: ${{ secrets.SECRET_TOKEN }} 
-  EXPIRES_IN: ${{ secrets.EXPIRES_IN }} 
-  REFRESH_EXPIRES_IN: ${{ secrets.REFRESH_EXPIRES_IN }} 
-  SALT: ${{ secrets.SALT }} 
-  USERNAME: ${{ secrets.USERNAME }} 
-  PASSWORD: ${{ secrets.PASSWORD }} 
-  EMAIL: ${{ secrets.EMAIL }} 
-                                               
 
 permissions:
   contents: read
@@ -81,6 +69,17 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.sha }}
+        POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }} 
+        POSTGRES_DB: ${{ secrets.POSTGRES_DB }} 
+        SECRET_TOKEN: ${{ secrets.SECRET_TOKEN }} 
+        EXPIRES_IN: ${{ secrets.EXPIRES_IN }} 
+        REFRESH_EXPIRES_IN: ${{ secrets.REFRESH_EXPIRES_IN }} 
+        SALT: ${{ secrets.SALT }} 
+        USERNAME: ${{ secrets.USERNAME }} 
+        PASSWORD: ${{ secrets.PASSWORD }} 
+        EMAIL: ${{ secrets.EMAIL }} 
       run: |
         # Build a docker container and
         # push it to ECR so that it can
