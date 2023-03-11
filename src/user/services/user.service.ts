@@ -35,6 +35,10 @@ export class UserService {
     return await this.userRepository.findOneByUsername(username);
   }
 
+  async findAll(): Promise<User[]> {
+    return await this.userRepository.findAll();
+  }
+
   /**
    * @name updateById
    * @param {Context} executionCtx
@@ -47,7 +51,8 @@ export class UserService {
       ...user,
     });
     await this.userRepository.update(executionCtx, id, userToUpdate);
-    return this.userRepository.findOneById(id);
+    const res = await this.userRepository.findOneById(id);
+    return res;
   }
 
   async assignRolesByUserId(executionCtx: Context, id: string, roles: string[]): Promise<User> {
@@ -60,9 +65,9 @@ export class UserService {
     //await this.userRepository.update(executionCtx, id, { roles: rolesFound });
     return this.userRepository.findOneById(id);
   }
+
   /*async assignRoles(executionCtx: Context, id: string, roles: string[]): Promise<User> {
     const 
-    
     console.log(rolesPromise);
     
     const userToUpdate = new User({

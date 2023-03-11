@@ -36,6 +36,7 @@ export class AuthService {
   }
 
   async logIn(user: Partial<User>): Promise<AuthToken> {
+    console.log(user);
     const payload = {
       userId: user.id,
       username: user.username,
@@ -69,7 +70,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const isRefreshTokenMatching = await compare(refreshToken, user.refreshToken);
+    const isRefreshTokenMatching = await compare(encodeURI(refreshToken), user.refreshToken);
 
     if (!isRefreshTokenMatching) {
       throw new UnauthorizedException();
@@ -100,6 +101,14 @@ export class AuthService {
       refreshToken: token.refresh,
       expiresIn: this.config.get('EXPIRES_IN'),
     };
+  }
+
+  async verify(token: string): Promise<any> {
+    try {
+      return await this.jwtService.verify(token);
+    } catch (error) {
+      throw new UnauthorizedException(error.message);
+    }
   }
 
   private async generateTokens(payload: any): Promise<Token> {

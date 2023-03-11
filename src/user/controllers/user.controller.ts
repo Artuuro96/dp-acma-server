@@ -17,6 +17,11 @@ export class UserController {
     return await this.userService.findOneById(id);
   }
 
+  @Get()
+  async findAll(): Promise<User[]> {
+    return await this.userService.findAll();
+  }
+
   @Post()
   async create(@ExecutionCtx() executionCtx: Context, @Body() user: UserDTO): Promise<User> {
     const userCreated = await this.userService.create(executionCtx, user);

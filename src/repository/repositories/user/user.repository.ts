@@ -37,4 +37,30 @@ export class UserRepository extends BaseRepository<User> {
       .andWhere('user.deleted = false')
       .getOne();
   }
+
+  async findAll(): Promise<User[]> {
+    const queryResults = await this.entityManager
+      .createQueryBuilder(User, 'user')
+      .select('user')
+      .addSelect('userRoles')
+      .addSelect('roles')
+      .leftJoin('user.userRoles', 'userRoles')
+      .leftJoin('userRoles.role', 'roles')
+      .where('user.deleted = false')
+      .getMany();
+
+    const users = queryResults.map((user) => {
+      user.roles = user.userRoles.map(
+        (userRole) =>
+          new Role({
+            id: userRole.role.id,
+            name: userRole.role.name,
+          }),
+      );
+      delete user.userRoles;
+      return user;
+    });
+
+    return users;
+  }
 }
