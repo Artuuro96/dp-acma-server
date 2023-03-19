@@ -36,7 +36,6 @@ export class AuthService {
   }
 
   async logIn(user: Partial<User>): Promise<AuthToken> {
-    console.log(user);
     const payload = {
       userId: user.id,
       username: user.username,

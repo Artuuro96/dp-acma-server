@@ -10,13 +10,6 @@ import { AuthService } from '../services/auth.service';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  /*@Post('test')
-  @UseGuards(JwtAuthGuard)
-  async validateUser(@Body() userCredentialDTO: UserCredentialsDTO): Promise<string> {
-    const { username, password } = userCredentialDTO;
-    return this.authService.validateUser(username, password);
-  }*/
-
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async logIn(@Request() req): Promise<AuthToken> {
