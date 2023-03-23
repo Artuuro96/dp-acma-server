@@ -1,5 +1,4 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { LoggerModule } from 'nestjs-pino';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from './config/config.module';
 import { HealthModule } from './health/health.module';
@@ -18,18 +17,6 @@ import { UserModule } from './user/user.module';
     PermissionModule,
     AuthModule,
     HealthModule,
-    LoggerModule.forRoot({
-      pinoHttp: {
-        transport: {
-          target: 'pino-pretty',
-          options: {
-            singleLine: true,
-            messageKey: 'message',
-          },
-        },
-        messageKey: 'message',
-      },
-    }),
   ],
 })
 export class AppModule implements NestModule {

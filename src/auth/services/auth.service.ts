@@ -103,9 +103,11 @@ export class AuthService {
   }
 
   async verify(token: string): Promise<any> {
+    console.log('AQUI ANDOOOOOOO', 'SIUUUUUUUUU');
     try {
       return await this.jwtService.verify(token);
     } catch (error) {
+      console.log('AQUIIII ESTOYYYY', error);
       throw new UnauthorizedException(error.message);
     }
   }
