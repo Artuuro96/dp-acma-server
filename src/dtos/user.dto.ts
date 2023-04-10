@@ -23,6 +23,9 @@ export class UserDTO {
   @IsArray()
   roles: string[];
 
+  @IsArray()
+  modules: string[];
+
   @IsBoolean()
   active: boolean;
 }

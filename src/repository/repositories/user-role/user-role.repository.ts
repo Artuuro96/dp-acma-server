@@ -7,4 +7,12 @@ export class UserRoleRepository extends BaseRepository<UserRole> {
   constructor(@InjectEntityManager() protected entityManager: EntityManager) {
     super(UserRole, entityManager);
   }
+
+  async deleteByUserId(userId: string): Promise<void> {
+    await this.entityManager
+      .createQueryBuilder(UserRole, 'userRole')
+      .delete()
+      .where('user_id = :userId', { userId })
+      .execute();
+  }
 }

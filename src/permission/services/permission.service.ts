@@ -3,7 +3,6 @@ import { PermissionDTO } from 'src/dtos/permission.dto';
 import { Permission } from '../../repository/entities/permission.entity';
 import { PermissionRepository } from '../../repository/repositories/permission/permission.repository';
 import { Context } from 'src/auth/context/execution-ctx';
-import { isNil } from 'lodash';
 @Injectable()
 export class PermissionService {
   constructor(private readonly permissionRepository: PermissionRepository) {}

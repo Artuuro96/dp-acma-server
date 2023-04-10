@@ -23,7 +23,7 @@ export class PermissionRepository extends BaseRepository<Permission> {
       .getOne();
 
     if (!queryResult) {
-      throw new NotFoundException(`permission ${id} not found`);
+      throw new NotFoundException([`permission ${id} not found`, `id de permiso ${id} encontrado`]);
     }
     return queryResult;
   }
@@ -42,7 +42,7 @@ export class PermissionRepository extends BaseRepository<Permission> {
       .getOne();
 
     if (!queryResult) {
-      throw new NotFoundException(`permission ${name} not found`);
+      throw new NotFoundException([`permission ${name} not found`, `permiso ${name} no encontrado`]);
     }
     return queryResult;
   }

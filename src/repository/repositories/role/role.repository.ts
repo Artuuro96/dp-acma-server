@@ -23,7 +23,7 @@ export class RoleRepository extends BaseRepository<Role> {
       .getOne();
 
     if (!queryResult) {
-      throw new NotFoundException(`role ${id} not found`);
+      throw new NotFoundException([`role ${id} not found`, `role ${id} no encontrado`]);
     }
     return queryResult;
   }
@@ -34,7 +34,7 @@ export class RoleRepository extends BaseRepository<Role> {
     });
 
     if (!queryResult) {
-      throw new NotFoundException(`role ${name} is not found`);
+      throw new NotFoundException([`role ${name} is not found`, `role ${name} no encontrado`]);
     }
 
     return queryResult;

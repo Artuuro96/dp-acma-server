@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from './base.entity';
+import { Module } from './module.entity';
 import { Role } from './role.entity';
 import { Session } from './session.entity';
 import { UserModule } from './user-module.entity';
@@ -44,6 +45,8 @@ export class User extends BaseEntity {
   userRoles: UserRole[];
 
   roles: Role[];
+
+  modules: Module[];
 
   @OneToMany(() => UserModule, (UserModule) => UserModule.user)
   userModules: UserModule[];

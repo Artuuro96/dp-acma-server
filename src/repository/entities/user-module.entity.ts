@@ -1,4 +1,4 @@
-import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Module } from './module.entity';
 import { User } from './user.entity';
 
@@ -14,6 +14,12 @@ export class UserModule {
   @ManyToOne(() => Module)
   @JoinColumn({ name: 'module_id', referencedColumnName: 'id' })
   module: Module;
+
+  @Column({ name: 'created_at', type: 'timestamp', nullable: true })
+  createdAt: Date;
+
+  @Column('uuid', { name: 'created_by', nullable: true })
+  createdBy: string;
 
   constructor(userModule: Partial<UserModule> = {}) {
     Object.assign(this, userModule);

@@ -38,13 +38,22 @@ export class UserController {
     return await this.userService.updateById(executionCtx, id, user);
   }
 
-  @Patch('assign/roles')
+  @Patch('/:id/assign/roles')
   async assignRolesByUserId(
     @ExecutionCtx() executionCtx: Context,
     @Param('id') id: string,
     @Body('roles') roles: string[],
   ): Promise<User> {
     return await this.userService.assignRolesByUserId(executionCtx, id, roles);
+  }
+
+  @Patch('/:id/assign/modules')
+  async assignModulesByUserId(
+    @ExecutionCtx() executionCtx: Context,
+    @Param('id') id: string,
+    @Body('modules') modules: string[],
+  ): Promise<User> {
+    return await this.userService.assignModulesByUserId(executionCtx, id, modules);
   }
 
   @Delete('/:id')

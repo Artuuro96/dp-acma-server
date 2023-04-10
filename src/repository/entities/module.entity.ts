@@ -11,16 +11,19 @@ export class Module extends BaseEntity {
   name: string;
 
   @Column('varchar', { length: 25 })
-  text: string;
+  componentName: string;
 
   @Column('varchar', { length: 50 })
   description: string;
+
+  @Column('varchar', { length: 50, nullable: true })
+  icon: string;
 
   @Column('varchar', { length: 25, unique: true })
   path: string;
 
   @OneToMany(() => UserModule, (userModule) => userModule.module)
-  userModules: UserModule[];
+  userModules?: UserModule[];
 
   constructor(module: Partial<Module> = {}) {
     super(module);

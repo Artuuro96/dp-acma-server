@@ -3,6 +3,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from './config/config.module';
 import { HealthModule } from './health/health.module';
 import { CorrelationIdMiddleware } from './middlewares/correlation-id.middleware';
+import { ModuleModule } from './module/module.module';
 import { PermissionModule } from './permission/permission.module';
 import { RepositoryModule } from './repository/repository.module';
 import { RoleModule } from './role/role.module';
@@ -17,6 +18,7 @@ import { UserModule } from './user/user.module';
     PermissionModule,
     AuthModule,
     HealthModule,
+    ModuleModule,
   ],
 })
 export class AppModule implements NestModule {

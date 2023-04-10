@@ -7,4 +7,12 @@ export class UserModuleRepository extends BaseRepository<UserModule> {
   constructor(@InjectEntityManager() protected entityManager: EntityManager) {
     super(UserModule, entityManager);
   }
+
+  async deleteByUserId(userId: string): Promise<void> {
+    await this.entityManager
+      .createQueryBuilder(UserModule, 'userModule')
+      .delete()
+      .where('user_id = :userId', { userId })
+      .execute();
+  }
 }

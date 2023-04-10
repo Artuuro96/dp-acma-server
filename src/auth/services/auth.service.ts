@@ -14,6 +14,7 @@ import { Context } from '../context/execution-ctx';
 import { isNil } from 'lodash';
 import { Token } from '../interfaces/token.interface';
 import { Role } from 'src/repository/entities/role.entity';
+import { Module } from 'src/repository/entities/module.entity';
 
 @Injectable()
 export class AuthService {
@@ -44,6 +45,16 @@ export class AuthService {
       secondLastName: user.secondLastName,
       email: user.email,
       roles: user.roles?.map((role) => new Role({ id: role.id, name: role.name })),
+      modules: user.modules?.map(
+        (module) =>
+          new Module({
+            id: module.id,
+            path: module.path,
+            componentName: module.componentName,
+            name: module.name,
+            icon: module.icon,
+          }),
+      ),
     };
 
     const token = await this.generateTokens(payload);
@@ -103,11 +114,9 @@ export class AuthService {
   }
 
   async verify(token: string): Promise<any> {
-    console.log('AQUI ANDOOOOOOO', 'SIUUUUUUUUU');
     try {
       return await this.jwtService.verify(token);
     } catch (error) {
-      console.log('AQUIIII ESTOYYYY', error);
       throw new UnauthorizedException(error.message);
     }
   }

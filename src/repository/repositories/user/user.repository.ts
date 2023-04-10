@@ -1,5 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
+import { Module } from 'src/repository/entities/module.entity';
 import { Role } from 'src/repository/entities/role.entity';
 import { EntityManager } from 'typeorm';
 import { User } from '../../entities/user.entity';
@@ -16,26 +17,48 @@ export class UserRepository extends BaseRepository<User> {
       .select('user')
       .addSelect('userRoles')
       .addSelect('roles')
+      .addSelect('userModules')
+      .addSelect('modules')
       .leftJoin('user.userRoles', 'userRoles')
       .leftJoin('userRoles.role', 'roles')
+      .leftJoin('user.userModules', 'userModules')
+      .leftJoin('userModules.module', 'modules')
       .where('user.username = :username', { username })
       .andWhere('user.deleted = false')
       .getOne();
 
     if (!queryResult) {
-      throw new NotFoundException(`user ${username} not found`);
+      throw new NotFoundException([`user ${username} not found`, `usuario ${username} no encontrado`]);
     }
+    const modules = queryResult.userModules?.map((userModule) => new Module(userModule.module));
     const roles = queryResult.userRoles?.map((userRole) => new Role(userRole.role));
-    return new User({ ...queryResult, roles });
+    return new User({ ...queryResult, roles, modules });
   }
 
   async findOneById(id: string): Promise<User> {
-    return await this.entityManager
+    const queryResult = await this.entityManager
       .createQueryBuilder(User, 'user')
       .select('user')
-      .where('user.id = id', { id })
+      .addSelect('userRoles')
+      .addSelect('roles')
+      .addSelect('userModules')
+      .addSelect('modules')
+      .leftJoin('user.userRoles', 'userRoles')
+      .leftJoin('userRoles.role', 'roles')
+      .leftJoin('user.userModules', 'userModules')
+      .leftJoin('userModules.module', 'modules')
+      .where('user.id = :id', { id })
       .andWhere('user.deleted = false')
       .getOne();
+
+    if (!queryResult) {
+      throw new NotFoundException([`user ${id} not found`, `usuario no encontrado`]);
+    }
+    const modules = queryResult.userModules?.map((userModule) => new Module(userModule.module));
+    const roles = queryResult.userRoles?.map((userRole) => new Role(userRole.role));
+    delete queryResult?.userModules;
+    delete queryResult?.userRoles;
+    return new User({ ...queryResult, roles, modules });
   }
 
   async findAll(): Promise<User[]> {

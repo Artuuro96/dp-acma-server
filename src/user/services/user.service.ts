@@ -8,13 +8,17 @@ import { ConfigService } from 'src/config/config.service';
 import { RoleService } from 'src/role/services/role.service';
 import { Context } from 'src/auth/context/execution-ctx';
 import { UserRoleService } from 'src/user-role/services/user-role.service';
+import { ModuleService } from 'src/module/services/module.service';
+import { UserModuleService } from 'src/user-module/services/user-module.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly userRoleService: UserRoleService,
+    private readonly userModuleService: UserModuleService,
     private readonly roleService: RoleService,
+    private readonly moduleService: ModuleService,
     private readonly config: ConfigService,
   ) {}
 
@@ -56,25 +60,16 @@ export class UserService {
   }
 
   async assignRolesByUserId(executionCtx: Context, id: string, roles: string[]): Promise<User> {
-    //const userRoles = await this.roleService.findRolesByUserId(id);
-    const rolesPromise = roles.map((rol) => {
-      return this.roleService.findByName(rol);
-    });
-    const rolesFound = await Promise.all(rolesPromise);
-    console.log(rolesFound);
-    //await this.userRepository.update(executionCtx, id, { roles: rolesFound });
-    return this.userRepository.findOneById(id);
+    const user = await this.findOneById(id);
+    const userRoles = await this.userRoleService.assignByUserId(executionCtx, user, roles);
+    return user;
   }
 
-  /*async assignRoles(executionCtx: Context, id: string, roles: string[]): Promise<User> {
-    const 
-    console.log(rolesPromise);
-    
-    const userToUpdate = new User({
-      ...user,
-      roles: rolesFound,
-    });
-  }*/
+  async assignModulesByUserId(executionCtx: Context, id: string, moduleNames: string[]): Promise<User> {
+    const user = await this.findOneById(id);
+    const userModules = await this.userModuleService.assignByUserId(executionCtx, user, moduleNames);
+    return user;
+  }
 
   /**
    * @name create
@@ -88,6 +83,13 @@ export class UserService {
     });
 
     const rolesFound = await Promise.all(rolesPromise);
+
+    const modulesPromise = user.modules.map((module) => {
+      return this.moduleService.findByName(module);
+    });
+
+    const modulesFound = await Promise.all(modulesPromise);
+
     const salt = bcrypt.genSaltSync(Number(this.config.get('SALT')));
     user.password = await bcrypt.hash(user.password, salt);
 
@@ -102,7 +104,8 @@ export class UserService {
     newUser.createdBy = executionCtx.userId;
 
     const createdUser = await this.userRepository.create(newUser);
-    await this.userRoleService.create(createdUser, rolesFound);
+    await this.userRoleService.create(executionCtx, createdUser, rolesFound);
+    await this.userModuleService.create(executionCtx, createdUser, modulesFound);
 
     return createdUser;
   }
