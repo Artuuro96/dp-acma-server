@@ -94,6 +94,7 @@ export class AuthService {
       secondLastName: executionCtx.secondLastName,
       email: executionCtx.email,
       roles: executionCtx.roles,
+      modules: executionCtx.modules,
     };
 
     const token = await this.generateTokens(payload);
