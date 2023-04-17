@@ -1,13 +1,14 @@
 import { Controller, Get } from '@nestjs/common';
-import { Public } from '../auth/decorators/public.decorator';
+import { Public } from 'src/auth/decorators/public.decorator';
 
-@Controller('health')
-export class HealthController {
+@Controller('/health')
+export class HealthCheckController {
   @Public()
   @Get()
-  checkHealth(): { healthy: boolean } {
+  async checkHealth(): Promise<{ status: string; version: string }> {
     return {
-      healthy: true,
+      status: 'up',
+      version: '1.0.0',
     };
   }
 }
