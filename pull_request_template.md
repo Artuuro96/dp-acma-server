@@ -31,4 +31,4 @@ chore: Changes to the build process or auxiliary tools and libraries such as doc
 
 Example of how a commit message should be
 ```
-feat(SIP-0010): Edit assessment information
+feat(SIP-0010): added fucntionality to support roles

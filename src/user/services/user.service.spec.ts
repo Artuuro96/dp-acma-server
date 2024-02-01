@@ -1,25 +1,41 @@
 import { Test } from '@nestjs/testing';
 import { UserDTO } from 'src/dtos/user.dto';
-import { User } from 'src/repository/entities/user.entity';
 import { UserRepository } from 'src/repository/repositories/user/user.repository';
 import { createMockExcutionCtx } from 'test/testing.utils';
 import { EntityManager } from 'typeorm';
 import { UserService } from './user.service';
 import { genSaltSync, hash } from 'bcrypt';
 import { RoleService } from 'src/role/services/role.service';
-import { Role } from 'src/repository/entities/role.entity';
-import { RoleRepository } from 'src/repository/repositories/role/role.repository';
+import { Role, User, UserRole, UserModule, Module } from 'src/repository/entities';
 import { PermissionService } from 'src/permission/services/permission.service';
 import { ConfigService } from 'src/config/config.service';
 import { PermissionRepository } from 'src/repository/repositories/permission/permission.repository';
+import { RolePermissionService } from 'src/role-permission/services/role-permission.service';
+import { UserRoleService } from 'src/user-role/services/user-role.service';
+import { UserModuleService } from 'src/user-module/services/user-module.service';
+import { ModuleService } from 'src/module/services/module.service';
+import {
+  RoleRepository,
+  RolePermissionRepository,
+  UserModuleRepository,
+  UserRoleRepository,
+  ModuleRepository,
+} from 'src/repository/repositories';
+
 jest.mock('bcrypt');
 
 describe('UserService', () => {
+  let user: User;
+  let roles: Role[];
+  let module: Module;
+  let userRole: UserRole;
+  let userModule: UserModule;
   let userService: UserService;
   let roleService: RoleService;
   let userRepository: UserRepository;
-  let user: User;
-  let roles: Role[];
+  let userRoleService: UserRoleService;
+  let userModuleService: UserModuleService;
+
   const executionCtx = createMockExcutionCtx();
   const configService = {
     get: jest.fn().mockReturnValue('ENV'),
@@ -35,14 +51,24 @@ describe('UserService', () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [ConfigService],
+      imports: [],
       providers: [
-        UserRepository,
         RoleService,
+        ConfigService,
         UserService,
-        RoleRepository,
-        PermissionRepository,
+        RolePermissionService,
         PermissionService,
+        UserRoleService,
+        UserModuleService,
+        UserRoleRepository,
+        UserModuleRepository,
+        RolePermissionRepository,
+        PermissionRepository,
+        ModuleRepository,
+        RoleRepository,
+        RoleRepository,
+        UserRepository,
+        ModuleService,
         ConfigService,
         {
           provide: EntityManager,
@@ -70,6 +96,7 @@ describe('UserService', () => {
       createdBy: 'uuid',
       deleted: false,
     });
+
     roles = [
       new Role({
         id: 'role-2',
@@ -82,25 +109,54 @@ describe('UserService', () => {
         description: 'description',
       }),
     ];
-    userRepository.findByName = jest.fn().mockResolvedValue(user);
-    userRepository.findOne = jest.fn().mockResolvedValue(user);
+
+    module = new Module({
+      id: 'id',
+      name: 'module name',
+    });
+
+    userRole = new UserRole({
+      id: 'id',
+      user: user,
+      role: roles[0],
+    });
+
+    userModule = new UserModule({
+      id: 'id',
+      user,
+      module,
+    });
+
+    userRepository.findOneByUsername = jest.fn().mockResolvedValue(user);
+    userRepository.findOneById = jest.fn().mockResolvedValue(user);
     userRepository.create = jest.fn().mockResolvedValue(user);
+    userRepository.findAll = jest.fn().mockResolvedValue([user]);
+    userRoleService.create = jest.fn().mockResolvedValue([userRole]);
+    userModuleService.create = jest.fn().mockResolvedValue([userModule]);
     roleService.findByName = jest.fn().mockResolvedValueOnce(roles[0]).mockResolvedValue(roles[1]);
   });
 
-  describe('findByName', () => {
+  describe('findOneById', () => {
     it('should return the user found filtered by name', async () => {
-      const result = await userService.findByName('name');
-      expect(userRepository.findByName).toHaveBeenCalledWith('name');
+      const result = await userService.findOneById('id');
+      expect(userRepository.findOneById).toHaveBeenCalledWith('id');
       expect(result).toBe(user);
     });
   });
 
-  describe('findOne', () => {
+  describe('findOneByUsername', () => {
     it('should return the user found filtered by username', async () => {
-      const result = await userService.findOne('username');
-      expect(userRepository.findOne).toHaveBeenCalledWith('username');
+      const result = await userService.findOneByUsername('username');
+      expect(userRepository.findOneByUsername).toHaveBeenCalledWith('username');
       expect(result).toBe(user);
+    });
+  });
+
+  describe('findAll', () => {
+    it('should return a list of users', async () => {
+      const result = await userService.findAll();
+      expect(userRepository.findAll).toHaveBeenCalled();
+      expect(result).toMatchObject([user]);
     });
   });
 
@@ -115,6 +171,7 @@ describe('UserService', () => {
         password: '1234',
         username: 'arturo96',
         active: false,
+        modules: [],
       };
       const result = await userService.create(executionCtx, userDTO);
       expect(roleService.findByName).toHaveBeenNthCalledWith(1, 'role-1');

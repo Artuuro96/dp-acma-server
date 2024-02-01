@@ -1,15 +1,15 @@
 import { Test } from '@nestjs/testing';
-import { HealthController } from './health.controller';
+import { HealthCheckController } from './health.controller';
 
 describe('AuthHealthController', () => {
-  let healthController: HealthController;
+  let healthController: HealthCheckController;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      providers: [HealthController],
+      providers: [HealthCheckController],
     }).compile();
 
-    healthController = moduleRef.get<HealthController>(HealthController);
+    healthController = moduleRef.get<HealthCheckController>(HealthCheckController);
   });
 
   it('should check the health of authController', () => {
