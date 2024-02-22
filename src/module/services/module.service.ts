@@ -26,4 +26,8 @@ export class ModuleService {
 
     return queryResult;
   }
+
+  async deleteById(executionCtx: Context, id: string): Promise<void> {
+    await this.moduleRepository.delete(executionCtx, id);
+  }
 }

@@ -11,10 +11,9 @@ export class ModuleDTO {
 
   @IsString()
   @IsNotEmpty()
-  componentName: string;
-
-  description: string;
+  description?: string;
 
   @IsString()
+  @IsNotEmpty()
   icon: string;
 }

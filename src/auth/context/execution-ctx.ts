@@ -7,6 +7,10 @@ export class Context {
   email?: string;
   roles?: string[];
   modules?: string[];
+  activeRole?: {
+    id?: string;
+    name?: string;
+  };
   iat?: number;
   exp?: number;
 

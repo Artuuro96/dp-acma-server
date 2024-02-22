@@ -22,6 +22,11 @@ export class RoleController {
     return await this.roleService.findOneById(id);
   }
 
+  @Get('/user/:id')
+  async findByUserId(@Param('id') userId: string): Promise<Role[]> {
+    return await this.roleService.findByUserId(userId);
+  }
+
   @Patch('/:id')
   async updateById(
     @ExecutionCtx() executionCtx: Context,
@@ -29,5 +34,14 @@ export class RoleController {
     @Body() role: Partial<RoleUpdateDTO>,
   ): Promise<Role> {
     return await this.roleService.updateById(executionCtx, id, role);
+  }
+
+  @Patch('/:id/assign/permission')
+  async assignPermissionsByRoleId(
+    @ExecutionCtx() executionCtx: Context,
+    @Param('id') roleId: string,
+    @Body('permissions') permissions: string[],
+  ): Promise<Role> {
+    return await this.roleService.assignRolesByPermissionId(executionCtx, roleId, permissions);
   }
 }

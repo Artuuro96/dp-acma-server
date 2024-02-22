@@ -2,6 +2,7 @@ import { BaseEntity } from './base.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { UserRole } from './user-role.entity';
 import { RolePermission } from './role-permission.entity';
+import { Permission } from './permission.entity';
 
 @Entity('roles')
 export class Role extends BaseEntity {
@@ -19,6 +20,8 @@ export class Role extends BaseEntity {
 
   @OneToMany(() => RolePermission, (rolePermission) => rolePermission.role)
   rolePermissions: RolePermission[];
+
+  permissions: Permission[];
 
   constructor(role: Partial<Role> = {}) {
     super(role);

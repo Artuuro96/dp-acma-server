@@ -48,6 +48,11 @@ export class User extends BaseEntity {
 
   modules: Module[];
 
+  activeRole?: {
+    id: string;
+    name: string;
+  };
+
   @OneToMany(() => UserModule, (UserModule) => UserModule.user)
   userModules: UserModule[];
 

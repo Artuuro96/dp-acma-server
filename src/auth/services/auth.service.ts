@@ -48,9 +48,7 @@ export class AuthService {
       modules: user.modules?.map(
         (module) =>
           new Module({
-            id: module.id,
             path: module.path,
-            componentName: module.componentName,
             name: module.name,
             icon: module.icon,
           }),
@@ -59,6 +57,34 @@ export class AuthService {
 
     const token = await this.generateTokens(payload);
     const updatedUser = await this.userService.updateById(new Context(user), user.id, {
+      refreshToken: token.refreshHashed,
+    });
+
+    if (!updatedUser) {
+      throw new InternalServerErrorException('Error trying to update refresh token');
+    }
+
+    return {
+      accessToken: token.access,
+      refreshToken: token.refresh,
+      expiresIn: this.config.get('EXPIRES_IN'),
+    };
+  }
+
+  async logInAs(executionCtx: Context): Promise<AuthToken> {
+    const payload = {
+      userId: executionCtx.userId,
+      username: executionCtx.username,
+      name: executionCtx.name,
+      lastName: executionCtx.lastName,
+      secondLastName: executionCtx.secondLastName,
+      email: executionCtx.email,
+      activeRole: executionCtx.activeRole,
+      modules: executionCtx.modules,
+    };
+
+    const token = await this.generateTokens(payload);
+    const updatedUser = await this.userService.updateById(executionCtx, executionCtx.userId, {
       refreshToken: token.refreshHashed,
     });
 
@@ -93,7 +119,7 @@ export class AuthService {
       lastName: executionCtx.lastName,
       secondLastName: executionCtx.secondLastName,
       email: executionCtx.email,
-      roles: executionCtx.roles,
+      activeRole: executionCtx?.activeRole,
       modules: executionCtx.modules,
     };
 

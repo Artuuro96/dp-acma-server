@@ -61,11 +61,25 @@ export class RoleService {
    
   }*/
 
+  async assignRolesByPermissionId(
+    executionCtx: Context,
+    roleId: string,
+    permissions: string[],
+  ): Promise<Role> {
+    const role = await this.roleRepository.findOneById(roleId);
+    await this.rolePermissionService.assignByRoleId(executionCtx, role, permissions);
+    return role;
+  }
+
   async findByName(name: string): Promise<Role> {
     return this.roleRepository.findByName(name);
   }
 
   async findOneById(id: string): Promise<Role> {
     return this.roleRepository.findOneById(id);
+  }
+
+  async findByUserId(userId: string): Promise<Role[]> {
+    return await this.roleRepository.findByUserId(userId);
   }
 }
