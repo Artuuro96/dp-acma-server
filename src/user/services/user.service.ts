@@ -61,13 +61,13 @@ export class UserService {
 
   async assignRolesByUserId(executionCtx: Context, id: string, roles: string[]): Promise<User> {
     const user = await this.findOneById(id);
-    const userRoles = await this.userRoleService.assignByUserId(executionCtx, user, roles);
+    await this.userRoleService.assignByUserId(executionCtx, user, roles);
     return user;
   }
 
   async assignModulesByUserId(executionCtx: Context, id: string, moduleNames: string[]): Promise<User> {
     const user = await this.findOneById(id);
-    const userModules = await this.userModuleService.assignByUserId(executionCtx, user, moduleNames);
+    await this.userModuleService.assignByUserId(executionCtx, user, moduleNames);
     return user;
   }
 
