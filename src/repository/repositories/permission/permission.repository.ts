@@ -46,4 +46,29 @@ export class PermissionRepository extends BaseRepository<Permission> {
     }
     return queryResult;
   }
+
+  /**
+   * @name findByRoleId
+   * @param {string} name
+   * @returns {promise<Permission[]>}
+   */
+  async findByRoleId(roleId: string): Promise<Permission[]> {
+    const queryResult = await this.entityManager
+      .createQueryBuilder(Permission, 'permission')
+      .select('permission')
+      .addSelect('rolePermissions')
+      .addSelect('roles')
+      .leftJoin('permission.rolePermission', 'rolePermissions')
+      .leftJoin('rolePermissions.role', 'roles')
+      .where('roles.id = :id', { id: roleId })
+      .getMany();
+
+    if (!queryResult) {
+      throw new NotFoundException([
+        `permissions not found for role id ${roleId}`,
+        `permisos no encontrados para el rol id ${roleId}`,
+      ]);
+    }
+    return queryResult;
+  }
 }

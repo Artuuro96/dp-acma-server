@@ -31,6 +31,15 @@ export class PermissionService {
   }
 
   /**
+   * @name findByRoleId
+   * @param {string} roleId
+   * @returns {Promise<Permission[]>}
+   */
+  async findByRoleId(roleId: string): Promise<Permission[]> {
+    return await this.permissionRepository.findByRoleId(roleId);
+  }
+
+  /**
    * @name findByName
    * @param {Context} ExecutionCtx
    * @param {string} id

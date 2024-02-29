@@ -15,11 +15,13 @@ import { isNil } from 'lodash';
 import { Token } from '../interfaces/token.interface';
 import { Role } from 'src/repository/entities/role.entity';
 import { Module } from 'src/repository/entities/module.entity';
+import { PermissionService } from 'src/permission/services/permission.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
+    private readonly permissionService: PermissionService,
     private readonly jwtService: JwtService,
     private readonly config: ConfigService,
   ) {}
@@ -72,6 +74,8 @@ export class AuthService {
   }
 
   async logInAs(executionCtx: Context): Promise<AuthToken> {
+    const permissions = await this.permissionService.findByRoleId(executionCtx.activeRole.id);
+
     const payload = {
       userId: executionCtx.userId,
       username: executionCtx.username,
@@ -81,6 +85,7 @@ export class AuthService {
       email: executionCtx.email,
       activeRole: executionCtx.activeRole,
       modules: executionCtx.modules,
+      permissions: permissions.map((permission) => permission.name),
     };
 
     const token = await this.generateTokens(payload);
@@ -146,6 +151,12 @@ export class AuthService {
     } catch (error) {
       throw new UnauthorizedException(error.message);
     }
+  }
+
+  async verifyPermissions(roleId: string, resource: string): Promise<boolean> {
+    const userPermissions = await this.permissionService.findByRoleId(roleId);
+    const permissions = userPermissions.map((permission) => permission.name);
+    return permissions.includes(resource);
   }
 
   private async generateTokens(payload: any): Promise<Token> {
