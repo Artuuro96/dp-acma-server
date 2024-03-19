@@ -43,6 +43,10 @@ export class UserService {
     return await this.userRepository.findAll();
   }
 
+  async findManyByIds(ids: string[]): Promise<User[]> {
+    return await this.userRepository.findManyByIds(ids);
+  }
+
   /**
    * @name updateById
    * @param {Context} executionCtx

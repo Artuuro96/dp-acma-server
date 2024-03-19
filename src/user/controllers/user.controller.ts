@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { Context } from 'src/auth/context/execution-ctx';
 import { ExecutionCtx } from 'src/auth/decorators/execution-ctx.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -13,6 +13,10 @@ import { Authorize } from '../../auth/decorators/authorize.decorator';
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+  @Get('findMany')
+  async findMany(@Query('userIds') ids: string[]): Promise<User[]> {
+    return await this.userService.findManyByIds(ids);
+  }
 
   @Get('/:id')
   async findOneById(@Param('id') id: string): Promise<User> {

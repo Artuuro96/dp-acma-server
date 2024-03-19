@@ -86,4 +86,14 @@ export class UserRepository extends BaseRepository<User> {
 
     return users;
   }
+
+  async findManyByIds(ids: string[]): Promise<User[]> {
+    const queryResult = await this.entityManager
+      .createQueryBuilder(User, 'user')
+      .select('user')
+      .where('user.id IN (..ids)', { ids })
+      .execute();
+
+    return queryResult;
+  }
 }
