@@ -24,6 +24,11 @@ export class PermissionController {
     return await this.permissionService.findOneById(id);
   }
 
+  @Get('roles/:id')
+  async findRolesById(@Param('id') roleId: string): Promise<Permission[]> {
+    return await this.permissionService.findByRoleId(roleId);
+  }
+
   @Patch('/:id')
   async update(
     @ExecutionCtx() executionCtx: Context,

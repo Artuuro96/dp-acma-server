@@ -6,6 +6,7 @@ import { LocalAuthGuard } from '../guards/local-auth.guard';
 import { RefreshJwtGuard } from '../guards/refresh-jwt.guard';
 import { AuthService } from '../services/auth.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { ActiveRoleDTO } from 'src/dtos/active-role.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -20,10 +21,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('loginAs')
-  async logInAs(
-    @Request() req,
-    @Body('activeRole') activeRole: { id: string; name: string },
-  ): Promise<AuthToken> {
+  async logInAs(@Request() req, @Body('activeRole') activeRole: ActiveRoleDTO): Promise<AuthToken> {
     const user = req.user as User;
     user.activeRole = activeRole;
     return await this.authService.logInAs(new Context(user));

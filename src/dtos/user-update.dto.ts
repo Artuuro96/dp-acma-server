@@ -1,4 +1,5 @@
 import { IsBoolean, IsNotEmpty, IsOptional, IsString, IsStrongPassword } from 'class-validator';
+import { ActiveRole } from 'src/auth/interfaces/active-role';
 
 export class UserUpdateDTO {
   @IsString()
@@ -29,4 +30,8 @@ export class UserUpdateDTO {
   @IsString()
   @IsOptional()
   refreshToken?: string;
+
+  @IsString()
+  @IsOptional()
+  activeRole?: ActiveRole;
 }

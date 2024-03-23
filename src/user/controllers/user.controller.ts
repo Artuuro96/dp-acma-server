@@ -7,7 +7,6 @@ import { UserDTO } from 'src/dtos/user.dto';
 import { User } from 'src/repository/entities/user.entity';
 import { UserService } from '../services/user.service';
 import { AuthorizeGuard } from '../../auth/guards/authorize.guard';
-import { Authorize } from '../../auth/decorators/authorize.decorator';
 
 @UseGuards(JwtAuthGuard, AuthorizeGuard)
 @Controller('user')
@@ -24,7 +23,7 @@ export class UserController {
   }
 
   @Get()
-  @Authorize('users:findAll')
+  //@Authorize('users:findAll')
   async findAll(): Promise<User[]> {
     return await this.userService.findAll();
   }

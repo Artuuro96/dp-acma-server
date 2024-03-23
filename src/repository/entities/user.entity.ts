@@ -5,6 +5,7 @@ import { Role } from './role.entity';
 import { Session } from './session.entity';
 import { UserModule } from './user-module.entity';
 import { UserRole } from './user-role.entity';
+import { ActiveRole } from 'src/auth/interfaces/active-role';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -48,10 +49,8 @@ export class User extends BaseEntity {
 
   modules: Module[];
 
-  activeRole?: {
-    id: string;
-    name: string;
-  };
+  @Column('jsonb', { name: 'active_role', nullable: true })
+  activeRole?: ActiveRole;
 
   @OneToMany(() => UserModule, (UserModule) => UserModule.user)
   userModules: UserModule[];

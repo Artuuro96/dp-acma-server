@@ -91,6 +91,10 @@ export class AuthService {
     const token = await this.generateTokens(payload);
     const updatedUser = await this.userService.updateById(executionCtx, executionCtx.userId, {
       refreshToken: token.refreshHashed,
+      activeRole: {
+        id: executionCtx.activeRole.id,
+        name: executionCtx.activeRole.name,
+      },
     });
 
     if (!updatedUser) {

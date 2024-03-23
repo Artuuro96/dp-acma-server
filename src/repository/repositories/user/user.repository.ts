@@ -67,8 +67,12 @@ export class UserRepository extends BaseRepository<User> {
       .select('user')
       .addSelect('userRoles')
       .addSelect('roles')
+      .addSelect('userModules')
+      .addSelect('modules')
       .leftJoin('user.userRoles', 'userRoles')
       .leftJoin('userRoles.role', 'roles')
+      .leftJoin('user.userModules', 'userModules')
+      .leftJoin('userModules.module', 'modules')
       .where('user.deleted = false')
       .getMany();
 
@@ -80,7 +84,17 @@ export class UserRepository extends BaseRepository<User> {
             name: userRole.role.name,
           }),
       );
+
+      user.modules = user.userModules.map(
+        (userModule) =>
+          new Module({
+            id: userModule.module.id,
+            name: userModule.module.name,
+          }),
+      );
+
       delete user.userRoles;
+      delete user.userModules;
       return user;
     });
 
@@ -91,9 +105,13 @@ export class UserRepository extends BaseRepository<User> {
     const queryResult = await this.entityManager
       .createQueryBuilder(User, 'user')
       .select('user')
-      .where('user.id IN (..ids)', { ids })
-      .execute();
+      .whereInIds(ids)
+      .getMany();
 
-    return queryResult;
+    return queryResult.map((user) => {
+      delete user.refreshToken;
+      delete user.password;
+      return user;
+    });
   }
 }
