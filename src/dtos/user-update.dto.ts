@@ -1,5 +1,15 @@
-import { IsBoolean, IsNotEmpty, IsOptional, IsString, IsStrongPassword } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsStrongPassword,
+  ValidateNested,
+} from 'class-validator';
 import { ActiveRole } from 'src/auth/interfaces/active-role';
+import { ModulesAssignedDTO } from './modules-assigned.dto';
+import { RolesAssignedDTO } from './roles-assigned.dto';
 
 export class UserUpdateDTO {
   @IsString()
@@ -34,4 +44,14 @@ export class UserUpdateDTO {
   @IsString()
   @IsOptional()
   activeRole?: ActiveRole;
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested()
+  modules?: ModulesAssignedDTO[];
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested()
+  roles?: RolesAssignedDTO[];
 }

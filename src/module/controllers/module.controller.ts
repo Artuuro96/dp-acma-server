@@ -16,6 +16,11 @@ export class ModuleController {
     return await this.moduleService.create(executionCtx, moduleDTO);
   }
 
+  @Get()
+  async findAll(): Promise<Module[]> {
+    return await this.moduleService.findAll();
+  }
+
   @Get('/name/:name')
   async findByName(@Param('name') name: string): Promise<Module> {
     return await this.moduleService.findByName(name);

@@ -16,6 +16,9 @@ export class ModuleService {
     });
     return await this.moduleRepository.create(newModule);
   }
+  async findAll(): Promise<Module[]> {
+    return await this.moduleRepository.findAll();
+  }
 
   async findByName(name: string): Promise<Module> {
     const queryResult = await this.moduleRepository.findByName(name);

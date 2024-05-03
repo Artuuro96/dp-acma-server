@@ -1,8 +1,7 @@
-import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Module } from './module.entity';
 import { Role } from './role.entity';
-import { Session } from './session.entity';
 import { UserModule } from './user-module.entity';
 import { UserRole } from './user-role.entity';
 import { ActiveRole } from 'src/auth/interfaces/active-role';
@@ -42,7 +41,7 @@ export class User extends BaseEntity {
   @Column('boolean', { default: false })
   verified: boolean;
 
-  @OneToMany(() => UserRole, (userRole) => userRole.user)
+  @OneToMany(() => UserRole, (userRole) => userRole.user, { onDelete: 'CASCADE' })
   userRoles: UserRole[];
 
   roles: Role[];
@@ -52,11 +51,8 @@ export class User extends BaseEntity {
   @Column('jsonb', { name: 'active_role', nullable: true })
   activeRole?: ActiveRole;
 
-  @OneToMany(() => UserModule, (UserModule) => UserModule.user)
+  @OneToMany(() => UserModule, (UserModule) => UserModule.user, { onDelete: 'CASCADE' })
   userModules: UserModule[];
-
-  @OneToOne(() => Session)
-  session: Session;
 
   @Column('varchar', { name: 'refresh_token', nullable: true })
   refreshToken: string;

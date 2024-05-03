@@ -17,6 +17,11 @@ export class RoleController {
     return await this.roleService.create(executionCtx, role);
   }
 
+  @Get()
+  async findAll(): Promise<Role[]> {
+    return await this.roleService.findAll();
+  }
+
   @Get('/:id')
   async findOneById(@Param('id') id: string): Promise<Role> {
     return await this.roleService.findOneById(id);

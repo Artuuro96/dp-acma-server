@@ -1,4 +1,6 @@
 import { IsArray, IsBoolean, IsEmail, IsNotEmpty, IsString, IsStrongPassword } from 'class-validator';
+import { RolesAssignedDTO } from './roles-assigned.dto';
+import { ModulesAssignedDTO } from './modules-assigned.dto';
 
 export class UserDTO {
   @IsString()
@@ -21,10 +23,10 @@ export class UserDTO {
   password: string;
 
   @IsArray()
-  roles: string[];
+  roles: RolesAssignedDTO[];
 
   @IsArray()
-  modules: string[];
+  modules: ModulesAssignedDTO[];
 
   @IsBoolean()
   active: boolean;

@@ -42,6 +42,9 @@ export class RoleService {
     return createdRole;
   }
 
+  async findAll(): Promise<Role[]> {
+    return await this.roleRepository.findAll();
+  }
   /**
    * @name update
    * @param {Context} executionCtx

@@ -7,6 +7,8 @@ import { UserDTO } from 'src/dtos/user.dto';
 import { User } from 'src/repository/entities/user.entity';
 import { UserService } from '../services/user.service';
 import { AuthorizeGuard } from '../../auth/guards/authorize.guard';
+import { ModulesAssignedDTO } from 'src/dtos/modules-assigned.dto';
+import { RolesAssignedDTO } from 'src/dtos/roles-assigned.dto';
 
 @UseGuards(JwtAuthGuard, AuthorizeGuard)
 @Controller('user')
@@ -48,7 +50,7 @@ export class UserController {
   async assignRolesByUserId(
     @ExecutionCtx() executionCtx: Context,
     @Param('id') id: string,
-    @Body('roles') roles: string[],
+    @Body('roles') roles: RolesAssignedDTO[],
   ): Promise<User> {
     return await this.userService.assignRolesByUserId(executionCtx, id, roles);
   }
@@ -57,13 +59,14 @@ export class UserController {
   async assignModulesByUserId(
     @ExecutionCtx() executionCtx: Context,
     @Param('id') id: string,
-    @Body('modules') modules: string[],
+    @Body('modules') modules: ModulesAssignedDTO[],
   ): Promise<User> {
     return await this.userService.assignModulesByUserId(executionCtx, id, modules);
   }
 
   @Delete('/:id')
-  async delete(@ExecutionCtx() executionCtx: Context, @Param('id') id: string): Promise<void> {
-    return await this.userService.delete(executionCtx, id);
+  async delete(@ExecutionCtx() executionCtx: Context, @Param('id') id: string): Promise<{ id: string }> {
+    await this.userService.delete(executionCtx, id);
+    return { id };
   }
 }

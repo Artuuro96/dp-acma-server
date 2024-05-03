@@ -10,6 +10,11 @@ export class RoleRepository extends BaseRepository<Role> {
     super(Role, entityManager);
   }
 
+  async findAll(): Promise<Role[]> {
+    const queryResult = await this.entityManager.createQueryBuilder(Role, 'role').select('role').getMany();
+    return queryResult;
+  }
+
   /**
    * @name findOneById
    * @param {string} id

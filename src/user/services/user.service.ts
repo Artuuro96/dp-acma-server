@@ -10,6 +10,8 @@ import { Context } from 'src/auth/context/execution-ctx';
 import { UserRoleService } from 'src/user-role/services/user-role.service';
 import { ModuleService } from 'src/module/services/module.service';
 import { UserModuleService } from 'src/user-module/services/user-module.service';
+import { RolesAssignedDTO } from 'src/dtos/roles-assigned.dto';
+import { ModulesAssignedDTO } from 'src/dtos/modules-assigned.dto';
 
 @Injectable()
 export class UserService {
@@ -55,22 +57,47 @@ export class UserService {
    * @returns {Promise<User>}
    */
   async updateById(executionCtx: Context, id: string, user: Partial<UserUpdateDTO>): Promise<User> {
+    let rolesFound, modulesFound;
+    if (user.roles && user.roles.length > 0) {
+      const rolesPromise = user?.roles?.map((role) => {
+        return this.roleService.findByName(role.name);
+      });
+      rolesFound = await Promise.all(rolesPromise);
+    }
+
+    if (user.modules && user.modules.length > 0) {
+      const modulesPromise = user?.modules?.map((module) => {
+        return this.moduleService.findByName(module.name);
+      });
+
+      modulesFound = await Promise.all(modulesPromise);
+    }
+
     const userToUpdate = new User({
       ...user,
+      roles: rolesFound,
+      modules: modulesFound,
     });
+
     await this.userRepository.update(executionCtx, id, userToUpdate);
     const res = await this.userRepository.findOneById(id);
     return res;
   }
 
-  async assignRolesByUserId(executionCtx: Context, id: string, roles: string[]): Promise<User> {
+  async assignRolesByUserId(executionCtx: Context, id: string, roles: RolesAssignedDTO[]): Promise<User> {
     const user = await this.findOneById(id);
-    await this.userRoleService.assignByUserId(executionCtx, user, roles);
+    const roleNames = roles.map((role) => role.name);
+    await this.userRoleService.assignByUserId(executionCtx, user, roleNames);
     return user;
   }
 
-  async assignModulesByUserId(executionCtx: Context, id: string, moduleNames: string[]): Promise<User> {
+  async assignModulesByUserId(
+    executionCtx: Context,
+    id: string,
+    modules: ModulesAssignedDTO[],
+  ): Promise<User> {
     const user = await this.findOneById(id);
+    const moduleNames = modules.map((module) => module.name);
     await this.userModuleService.assignByUserId(executionCtx, user, moduleNames);
     return user;
   }
@@ -82,14 +109,14 @@ export class UserService {
    * @returns {Promise<User>}
    */
   async create(executionCtx: Context, user: UserDTO): Promise<User> {
-    const rolesPromise = user.roles.map((rol) => {
-      return this.roleService.findByName(rol);
+    const rolesPromise = user.roles.map((role) => {
+      return this.roleService.findByName(role.name);
     });
 
     const rolesFound = await Promise.all(rolesPromise);
 
     const modulesPromise = user.modules.map((module) => {
-      return this.moduleService.findByName(module);
+      return this.moduleService.findByName(module.name);
     });
 
     const modulesFound = await Promise.all(modulesPromise);
@@ -111,7 +138,7 @@ export class UserService {
     await this.userRoleService.create(executionCtx, createdUser, rolesFound);
     await this.userModuleService.create(executionCtx, createdUser, modulesFound);
 
-    return createdUser;
+    return await this.userRepository.findOneById(createdUser.id);
   }
 
   /**

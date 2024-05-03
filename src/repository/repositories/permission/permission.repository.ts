@@ -69,6 +69,9 @@ export class PermissionRepository extends BaseRepository<Permission> {
         `permisos no encontrados para el rol id ${roleId}`,
       ]);
     }
-    return queryResult;
+    return queryResult.map((permission) => {
+      delete permission.rolePermission;
+      return permission;
+    });
   }
 }

@@ -16,4 +16,8 @@ export class ModuleRepository extends BaseRepository<Module> {
       .andWhere('deleted = false')
       .getOne();
   }
+
+  async findAll(): Promise<Module[]> {
+    return await this.entityManager.createQueryBuilder(Module, 'module').select().getMany();
+  }
 }
